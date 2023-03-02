@@ -1,0 +1,4 @@
+name: CasinoPlugin
+version: '${project.version}'
+main: silverassist.casinoplugin.CasinoPlugin
+api-version: 1.19
