@@ -102,7 +102,12 @@ public class Util {
     }
 
     public static void broadcast(String s){
-        plugin.getServer().broadcastMessage(s);
+        plugin.getServer().broadcastMessage(PREFIX+s);
+    }
+
+    public static void title(String mainTitle){title(mainTitle,"");}
+    public static void title(String mainTitle,String subTitle){
+        Bukkit.getOnlinePlayers().forEach(p-> p.sendTitle(mainTitle,subTitle,20,60,20));
     }
 
 
