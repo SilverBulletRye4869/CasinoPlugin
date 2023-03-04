@@ -23,12 +23,12 @@ public class MainSystem_slot {
     }
 
     public boolean existSlot(String id){
-        return SLOTS.containsKey(id) || CustomConfig.existYml(id,"system");
+        return SLOTS.containsKey(id) || CustomConfig.existYml(id);
     }
 
     public Spin getSlot(String id){
         if(!SLOTS.containsKey(id)){
-            if(!CustomConfig.existYml(id,"system"))return null;
+            if(!CustomConfig.existYml(id))return null;
             SLOTS.put(id,new Spin(plugin,this,id));
         }
         return SLOTS.get(id);

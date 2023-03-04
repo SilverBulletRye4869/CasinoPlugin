@@ -43,7 +43,7 @@ public class Spin {
         this.plugin = plugin;
         this.MAIN_SYSTEM = mainSystem;
         this.ID = id;
-        SYSTEM_YML = CustomConfig.getYmlByID(id,"system");
+        SYSTEM_YML = CustomConfig.getYmlByID(id);
         this.NAME = SYSTEM_YML.getString("name",ID);
         this.mode = SYSTEM_YML.getString("nowMode","1");
         ITEM_FRAMES = SYSTEM_YML.getStringList("itemframes").stream().map(UUID::fromString).collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class Spin {
                    }
                }
                 try {
-                    Thread.sleep(50*3);
+                    Thread.sleep(50*5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

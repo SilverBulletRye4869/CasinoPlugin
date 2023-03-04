@@ -14,6 +14,7 @@ public class CustomConfig {
     private static JavaPlugin plugin = CasinoPlugin.getInstance();
     private static HashSet<String> existSet = new HashSet<>();
 
+    public static YamlConfiguration getYmlByID(String id){return getYmlByID(id,"system");}
     public static YamlConfiguration getYmlByID(String id, String type) {
         if(!config.containsKey(id)){
             if(!reloadYmlByID(id,type))return null;
@@ -21,12 +22,14 @@ public class CustomConfig {
         return config.get(id);
     }
 
+    public static boolean existYml(String id){return existYml(id,"system");}
     public static boolean existYml(String id, String type){
         if(existSet.contains(id+"_"+type))return true;
         if(new File(plugin.getDataFolder(),"data/"+id+"/"+type+".yml").exists()){existSet.add(id+"_"+type);return true;}
         return false;
     }
 
+    public static YamlConfiguration createYmlByID(String id){return createYmlByID(id,"system");}
     public static YamlConfiguration createYmlByID(String id,String type){
         File file = new File(plugin.getDataFolder(),"data/"+id+"/"+type+".yml");
         try {
@@ -50,6 +53,7 @@ public class CustomConfig {
         return result;
     }
 
+    public static boolean reloadYmlByID(String id){return reloadYmlByID(id,"system");}
     public static boolean reloadYmlByID(String id, String type){
         File file = new File(plugin.getDataFolder(),"data/"+id+"/"+type+".yml");
         if(!file.exists())return false;
@@ -58,6 +62,7 @@ public class CustomConfig {
         return true;
     }
 
+    public static void saveYmlByID(String id){saveYmlByID(id,"system");}
     public static void saveYmlByID(String id, String type){
         try{
             config.get(id+"_"+type).save(new File(plugin.getDataFolder(),"data/" + id +"/"+type +".yml"));
