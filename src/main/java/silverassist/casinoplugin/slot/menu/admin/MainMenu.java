@@ -28,6 +28,7 @@ public class MainMenu {
         this.MAIN_SYSTEM = mainSystem_slot;
         this.P = p;
         this.ID = id;
+        plugin.getServer().getPluginManager().registerEvents(new listener(),plugin);
     }
 
     public void open(){
@@ -64,6 +65,7 @@ public class MainMenu {
 
                 case 16:
                     //たぶんこの先一番大変になる所
+                    new LevelChoice(plugin,MAIN_SYSTEM,P,ID).open();
                     break;
 
                 case 19:
