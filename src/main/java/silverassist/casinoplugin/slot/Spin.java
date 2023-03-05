@@ -54,7 +54,7 @@ public class Spin {
     }
 
     public boolean run(Player p){
-        if(isSpinning)return false;
+        if(isSpinning || PROBABILITY.keySet().size() == 0)return false;
         isSpinning = true;
         Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             Vault.getEconomy().withdrawPlayer(p,PAYMENT);
@@ -130,13 +130,16 @@ public class Spin {
             ItemStack[] itemStacks = new ItemStack[size];
             for(int i = 0;i<size;i++){
                 ItemStack item = yml.getItemStack(Slot.ID+"."+i);
-                if(item == null)break;
+                if(item == null){
+                    if(i==0)return;
+                    else break;
+                }
                 Slot.DISPLAY_ITEMS.add(item);
                 itemStacks[i] = item;
             }
             Slot.CONSTANT_MONEY_BY_CATEGORY.put(e,yml.getInt(e+".constant_money",0));
             Slot.MULTIPLIER_BY_CATEGORY.put(e,yml.getDouble(e+".multiplier",1.0));
-            Slot.GAVE_ITEM_BY_CATEGORY.put(e,yml.getItemStack(e+".item"));
+            if(yml.get(e+".item")!=null)Slot.GAVE_ITEM_BY_CATEGORY.put(e,yml.getItemStack(e+".item"));
             if(yml.getBoolean(e+".broadcast",false))Slot.BROADCAST.add(e);
             if(yml.getBoolean(e+".title",false))Slot.TITLE.add(e);
             Slot.PROBABILITY.put(now.addAndGet(yml.getInt(e+".weight")),e);
