@@ -37,7 +37,7 @@ public class SlotCommand implements CommandExecutor {
         String id = args[1];
         switch (args[0]){
             case "create":
-                if(!CustomConfig.existYml(id)){
+                if(!MAIN_SYSTEM.existSlot(id)){
                     YamlConfiguration yml = CustomConfig.createYmlByID(id);
                     yml.set("name",id);
                     yml.set("nowmode","1");
@@ -45,11 +45,11 @@ public class SlotCommand implements CommandExecutor {
                     yml.set("stock_per_spin",0);
                     yml.set("payment",100);
                     CustomConfig.saveYmlByID(id);
-                    for(int i = 0;i<6;i++)CustomConfig.createYmlByID(id,String.valueOf(i));
+                    for(int i = 0;i<7;i++)CustomConfig.createYmlByID(id,String.valueOf(i));
                     Util.sendPrefixMessage(p,"§a§lスロット§d§l『"+id+"』を作成しました");
                 }
             case "edit":
-                if(!CustomConfig.existYml(id)){
+                if(!MAIN_SYSTEM.existSlot(id)){
                     Util.sendPrefixMessage(p,"§c§lそのスロットは存在しません");
                     return true;
                 }
