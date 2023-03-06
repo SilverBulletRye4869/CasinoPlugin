@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.casinoplugin.CustomConfig;
 import silverassist.casinoplugin.Util;
+import silverassist.casinoplugin.slot.menu.admin.CategoryChoice;
 import silverassist.casinoplugin.slot.menu.admin.MainMenu;
 
 import java.util.List;
@@ -53,7 +54,40 @@ public class SlotCommand implements CommandExecutor {
                     Util.sendPrefixMessage(p,"§c§lそのスロットは存在しません");
                     return true;
                 }
-                new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
+
+                if(args.length<4) new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
+                else{
+                    switch (args[2]){
+                        case "setname":
+                            CustomConfig.getYmlByID(id).set("name",args[3]);
+                            CustomConfig.saveYmlByID(id);
+                            new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
+                            break;
+
+                        case "setpayment":
+                            if(!args[3].matches("\\d+"))return true;
+                            CustomConfig.getYmlByID(id).set("payment",Integer.parseInt(args[3]));
+                            CustomConfig.saveYmlByID(id);
+                            new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
+                            break;
+
+                        case "setspintime":
+                            if(args.length<6)return true;
+                            for(int i = 3;i<6;i++){if(!args[i].matches("\\d+"))return true;}
+                            YamlConfiguration yml = CustomConfig.getYmlByID(id);
+                            for(int i = 3;i<6;i++)yml.set("spintime."+(i-3),Integer.parseInt(args[i]));
+                            CustomConfig.saveYmlByID(id);
+                            new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
+                            break;
+
+                        case "setmissweight":
+                            if(args.length<5 || !args[3].matches("\\d+") || !args[4].matches("\\d+"))return true;
+                            CustomConfig.getYmlByID(id,args[3]).set("miss.weight",Integer.parseInt(args[4]));
+                            new CategoryChoice(plugin,MAIN_SYSTEM,p,id,Integer.parseInt(args[3])).open();
+                            break;
+
+                    }
+                }
         }
         return false;
     }
