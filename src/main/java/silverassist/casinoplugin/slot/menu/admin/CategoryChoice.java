@@ -16,6 +16,8 @@ import silverassist.casinoplugin.CustomConfig;
 import silverassist.casinoplugin.Util;
 import silverassist.casinoplugin.slot.MainSystem_slot;
 
+import java.util.List;
+
 public class CategoryChoice {
     private final JavaPlugin plugin;
     private final MainSystem_slot MAIN_SYSTEM;
@@ -41,9 +43,9 @@ public class CategoryChoice {
         for(i = 0;i<17;i++){
             String name = YML.getString(i+".name");
             if(name == null)break;
-            inv.setItem(i, Util.createItem(Material.PAPER,"§e§lカテゴリー: "+name));
+            inv.setItem(i, Util.createItem(Material.PAPER,"§e§lカテゴリー: "+name, List.of("§f比重: "+YML.getString(i+".weight"))));
         }
-        inv.setItem(17,Util.createItem(Material.STRUCTURE_VOID,"§b§lはずれ"));
+        inv.setItem(17,Util.createItem(Material.STRUCTURE_VOID,"§b§lはずれ",List.of("§f比重: "+YML.getString("miss.weight"))));
         if(i<17)inv.setItem(i,Util.getPlusBanner());
         Util.delayInvOpen(P,inv);
     }
@@ -62,12 +64,18 @@ public class CategoryChoice {
                 YML.set(slot+".broadcast",false);
                 YML.set(slot+".title",false);
                 YML.set(slot+".weight",0);
+                YML.set(slot+".nextmode",LEVEL);
                 CustomConfig.saveYmlByID(ID, String.valueOf(LEVEL));
                 e.getInventory().setItem(slot,Util.createItem(Material.PAPER,"§e§lカテゴリー: "+(slot+1)));
                 if(slot<16)e.getInventory().setItem(slot,Util.getPlusBanner());
 
             }else if(slot<17){
                 new CategoryEdit(plugin,MAIN_SYSTEM,P,ID,LEVEL,String.valueOf(slot)).open();
+            }else if(slot == 17){
+                P.closeInventory();
+                Util.sendPrefixMessage(P,"§e§lハズレの比重を設定するには以下のコマンドを実行してください");
+                Util.sendPrefixMessage(P,"§a/slot edit <id>  setmissweight <level> <比重(整数)>");
+                Util.sendSuggestMessage(P,"§d§l[ここをクリックで自動入力]","§a/slot edit "+ID+" setmissweight "+LEVEL+" ");
             }
         }
 
