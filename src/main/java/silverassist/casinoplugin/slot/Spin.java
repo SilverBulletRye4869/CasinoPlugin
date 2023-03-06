@@ -58,7 +58,7 @@ public class Spin {
         isSpinning = true;
         Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             Vault.getEconomy().withdrawPlayer(p,PAYMENT);
-            int nowStock = getAndUpdateStock();
+            int nowStock = getAndUpdateStock(true);
 
             ItemStack memo = null, bingoItem = null;
             int bingoNum = (int) (Math.random() * categoryRandomMax);
@@ -99,15 +99,17 @@ public class Spin {
 
             if(category.equals("miss"))Util.sendPrefixMessage(p,"§c§lはずれました...");
             else{
-                int wonMoney;
-                if(CONSTANT_MONEY_BY_CATEGORY.containsKey(category))wonMoney = CONSTANT_MONEY_BY_CATEGORY.get(category);
-                else wonMoney =(int)(nowStock * MULTIPLIER_BY_CATEGORY.get(category));
+                int wonMoney = CONSTANT_MONEY_BY_CATEGORY.get(category);
+                if(wonMoney==0)wonMoney=(int)(nowStock * MULTIPLIER_BY_CATEGORY.get(category));
                 String bingoType = (bingoItem.getItemMeta().hasDisplayName() ? bingoItem.getItemMeta().getDisplayName() : bingoItem.getType().toString());
                 Util.sendPrefixMessage(p,"§a§lおめでとうございます！！§d§l『"+bingoType+"』§a§l揃いです！");
                 Vault.getEconomy().depositPlayer(p,wonMoney);
                 if(GAVE_ITEM_BY_CATEGORY.containsKey(category))p.getInventory().addItem(GAVE_ITEM_BY_CATEGORY.get(category));
                 if(BROADCAST.contains(category))Util.broadcast("§b§l"+p.getName()+"§a§lが§d§l『"+NAME+"』§a§lで、§6§l"+bingoType+"揃い§a§lにより§e§l"+wonMoney+"円§a§l獲得！！");
                 if(TITLE.contains(category))Util.title("§c§l"+NAME+"§6§lで当選！","§b§l"+p.getName()+"§a§lが§e§l"+wonMoney+"円§a§l獲得！！");
+                SYSTEM_YML.set("stock",SYSTEM_YML.getInt("def_stock",0));
+                getAndUpdateStock(false);
+                CustomConfig.saveYmlByID(ID);
             }
             isSpinning = false;
         });
@@ -116,6 +118,7 @@ public class Spin {
 
     public void setMode(String mode){setMode(this,mode);}
     public static void setMode(Spin Slot,String mode){
+        if(Slot.mode.equals(mode))return;
         Slot.DISPLAY_ITEMS.clear();
         Slot.PROBABILITY.clear();
         Slot.MULTIPLIER_BY_CATEGORY.clear();
@@ -129,7 +132,7 @@ public class Spin {
             int size = yml.getConfigurationSection(e).getKeys(false).size();
             ItemStack[] itemStacks = new ItemStack[size];
             for(int i = 0;i<size;i++){
-                ItemStack item = yml.getItemStack(Slot.ID+"."+i);
+                ItemStack item = yml.getItemStack(e+"."+i);
                 if(item == null){
                     if(i==0)return;
                     else break;
@@ -149,10 +152,11 @@ public class Spin {
         Slot.categoryRandomMax = now.get();
     }
 
-    public int getAndUpdateStock(){
-        int nowStock = SYSTEM_YML.getInt("stock",SYSTEM_YML.getInt("def_stock",0)) + STOCK_PER_SPIN;
+
+    public int getAndUpdateStock(boolean toAdd){
+        int nowStock = SYSTEM_YML.getInt("stock",SYSTEM_YML.getInt("def_stock",0)) + (toAdd ? STOCK_PER_SPIN : 0);
         SYSTEM_YML.set("stock",nowStock);
-        CustomConfig.saveYmlByID(ID,"system");
+        CustomConfig.saveYmlByID(ID);
 
         //看板のアップデートを書く
 
