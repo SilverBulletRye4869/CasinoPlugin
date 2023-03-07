@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.casinoplugin.CustomConfig;
 import silverassist.casinoplugin.Util;
 import silverassist.casinoplugin.slot.menu.admin.CategoryChoice;
+import silverassist.casinoplugin.slot.menu.admin.CategoryEdit;
 import silverassist.casinoplugin.slot.menu.admin.MainMenu;
 
 import java.util.List;
@@ -36,10 +37,12 @@ public class SlotCommand implements CommandExecutor {
         }
 
         String id = args[1];
+        YamlConfiguration yml;
+
         switch (args[0]){
             case "create":
                 if(!MAIN_SYSTEM.existSlot(id)){
-                    YamlConfiguration yml = CustomConfig.createYmlByID(id);
+                    yml = CustomConfig.createYmlByID(id);
                     yml.set("name",id);
                     yml.set("nowmode","1");
                     yml.set("spintime.1",40);yml.set("spintime.2",20);yml.set("spintime.3",20);
@@ -74,7 +77,8 @@ public class SlotCommand implements CommandExecutor {
                         case "setspintime":
                             if(args.length<6)return true;
                             for(int i = 3;i<6;i++){if(!args[i].matches("\\d+"))return true;}
-                            YamlConfiguration yml = CustomConfig.getYmlByID(id);
+                            yml = CustomConfig.getYmlByID(id);
+                            if(yml == null)return true;
                             for(int i = 3;i<6;i++)yml.set("spintime."+(i-3),Integer.parseInt(args[i]));
                             CustomConfig.saveYmlByID(id);
                             new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
@@ -85,6 +89,25 @@ public class SlotCommand implements CommandExecutor {
                             CustomConfig.getYmlByID(id,args[3]).set("miss.weight",Integer.parseInt(args[4]));
                             new CategoryChoice(plugin,MAIN_SYSTEM,p,id,Integer.parseInt(args[3])).open();
                             break;
+
+                        case "setconstantmoney":
+                        case "setmultiplier":
+                        case "setcategoryname":
+                        case "setnextmode":
+                            if(args.length<6)return true;
+                            if(!args[3].matches("\\d+")||!args[4].matches("\\d+"))return true;
+                            yml = CustomConfig.getYmlByID(id,args[3]);
+                            if(yml == null)return true;
+                            if(args[2].equals("setconstantmoney") && args[5].matches("\\d+"))yml.set(args[4]+".constant_money",Integer.parseInt(args[5]));
+                            else if(args[2].equals("setmultiplier") && args[5].matches("\\d+\\.\\d*"))yml.set(args[4]+".multiplier",Double.parseDouble(args[5]));
+                            else if(args[2].equals("setcategoryname"))yml.set(args[4]+".name",args[5]);
+                            else if(args[2].equals("setnextmode"))yml.set(args[4]+".nextmode",args[5]);
+                            CustomConfig.saveYmlByID(id,args[3]);
+                            new CategoryEdit(plugin,MAIN_SYSTEM,p,id,Integer.parseInt(args[3]),args[4]).open();
+                            break;
+
+
+
 
                     }
                 }
