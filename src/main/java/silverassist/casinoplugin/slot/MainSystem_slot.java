@@ -17,9 +17,11 @@ public class MainSystem_slot {
     public final Function<String,ItemStack> FRAME_SET_STICK = id -> Util.createItem(Material.STICK,"§6§l額縁編集棒", List.of("§fid: "+id,"§e§l額縁に対して右クリック！"),Map.of(Enchantment.DAMAGE_ALL,1));
     private final JavaPlugin plugin;
     private final Map<String,Spin> SLOTS = new HashMap<>();
+    private final SlotSign SIGN_SYSTEM;
 
     public MainSystem_slot(JavaPlugin plugin){
         this.plugin = plugin;
+        this.SIGN_SYSTEM = new SlotSign(plugin,this);
     }
 
     public boolean existSlot(String id){
@@ -39,4 +41,6 @@ public class MainSystem_slot {
         boolean result = SLOTS.get(id).run(p);
         return result;
     }
+
+    public SlotSign getSignSystem(){return SIGN_SYSTEM;}
 }
