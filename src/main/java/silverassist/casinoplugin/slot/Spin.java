@@ -1,6 +1,7 @@
 package silverassist.casinoplugin.slot;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,6 +35,8 @@ public class Spin {
     private final HashMap<String,ItemStack> GAVE_ITEM_BY_CATEGORY = new HashMap<>();
     private final Set<String> BROADCAST = new HashSet<>();
     private final Set<String> TITLE = new HashSet<>();
+    private final HashMap<String, String> NEXT_MODE=new HashMap<>();
+    private final Location SIGN_POS;
 
     private boolean isSpinning = false;
     private int categoryRandomMax = 0;
@@ -50,6 +53,7 @@ public class Spin {
         for(int i = 0;i<FRAME_COUNT;i++)SPIN_TIME[i] = (i==0 ? 0 : SPIN_TIME[i-1]) + SYSTEM_YML.getInt("spintime."+i);
         STOCK_PER_SPIN = SYSTEM_YML.getInt("stock_per_spin",0);
         PAYMENT = SYSTEM_YML.getInt("payment",100);
+        SIGN_POS = SYSTEM_YML.getLocation("sign");
         setMode(mode);
     }
 
@@ -110,6 +114,7 @@ public class Spin {
                 SYSTEM_YML.set("stock",SYSTEM_YML.getInt("def_stock",0));
                 getAndUpdateStock(false);
                 CustomConfig.saveYmlByID(ID);
+                setMode(NEXT_MODE.get(category));
             }
             isSpinning = false;
         });
@@ -147,6 +152,7 @@ public class Spin {
             if(yml.getBoolean(e+".title",false))Slot.TITLE.add(e);
             Slot.PROBABILITY.put(now.addAndGet(yml.getInt(e+".weight")),e);
             Slot.CATEGORY_CONTAIN_ITEMS.put(e,itemStacks);
+            Slot.NEXT_MODE.put(e,yml.getString(e+".nextmode"));
         });
         Slot.PROBABILITY.put(now.addAndGet(yml.getInt("miss.weight")),"miss");
         Slot.categoryRandomMax = now.get();
@@ -158,7 +164,7 @@ public class Spin {
         SYSTEM_YML.set("stock",nowStock);
         CustomConfig.saveYmlByID(ID);
 
-        //看板のアップデートを書く
+        MAIN_SYSTEM.getSignSystem().update(SIGN_POS,nowStock);
 
 
         return nowStock;
