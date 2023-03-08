@@ -55,8 +55,8 @@ public class CategoryEdit {
         inv.setItem(21,boolItem.apply("当選時タイトル",YML.getBoolean(CATEGORY+".title",false)));
         inv.setItem(22,Util.createItem(Material.NAME_TAG,"§f§lカテゴリ名変更"));
         inv.setItem(23,Util.createItem(Material.DROPPER,"§a§lモード遷移先を変更",List.of("§f§l現在: "+YML.getString(CATEGORY+".nextmode"))));
-        inv.setItem(24,Util.createItem(Material.GRAY_STAINED_GLASS_PANE,"§r"));
-        inv.setItem(25,Util.createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"§b§l当選時アイテム⇒"));
+        inv.setItem(24,Util.createItem(Material.LAVA_BUCKET,"§c§lこのカテゴリを削除"));
+        inv.setItem(25,Util.createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"§b§l当選時アイテム⇒",List.of("§fこのカテゴリの目が出たときに","§f貰えるアイテム")));
         inv.setItem(26,YML.getItemStack(CATEGORY+".item"));
 
         Util.delayInvOpen(P,inv);
@@ -106,6 +106,12 @@ public class CategoryEdit {
                         Util.sendPrefixMessage(P,"§e§l遷移先を変更するには以下のコマンドを実行してください");
                         Util.sendPrefixMessage(P,"§a/slot edit <id> setnextmode <level> <category-id> <次のレベル>");
                         Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setnextmode "+LEVEL+" "+CATEGORY+" ");
+                        break;
+
+                    case 24:
+                        YML.set(CATEGORY,null);
+                        CustomConfig.saveYmlByID(ID,String.valueOf(LEVEL));
+                        P.closeInventory();
                         break;
                 }
             }
