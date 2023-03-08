@@ -1,6 +1,5 @@
 package silverassist.casinoplugin.slot;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,6 +10,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.casinoplugin.CustomConfig;
+import silverassist.casinoplugin.Util;
 
 public class SlotSign {
     private final JavaPlugin plugin;
@@ -48,7 +48,15 @@ public class SlotSign {
             if(e.getClickedBlock()==null || !(e.getClickedBlock().getState() instanceof Sign))return;
             String[] lines = ((Sign) e.getClickedBlock().getState()).getLines();
             if(!MAIN_SYSTEM.existSlot(lines[3]))return;
-            MAIN_SYSTEM.spin(lines[3],e.getPlayer());
+
+
+            if(MAIN_SYSTEM.getSlot(lines[3]).canSpin(e.getPlayer())) {
+                boolean result = MAIN_SYSTEM.spin(lines[3],e.getPlayer());
+                if(!result)Util.sendPrefixMessage(e.getPlayer(),"§c§lスロットデータに誤りがあります。お近くの運営にお知らせください。");
+            }
+            else{
+                Util.sendPrefixMessage(e.getPlayer(),"§c§l所持金が足りません！");
+            }
 
         }
     }
