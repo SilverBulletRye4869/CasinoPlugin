@@ -49,7 +49,7 @@ public class Spin {
         SYSTEM_YML = CustomConfig.getYmlByID(id);
         this.NAME = SYSTEM_YML.getString("name",ID);
         this.mode = SYSTEM_YML.getString("nowMode","1");
-        ITEM_FRAMES = SYSTEM_YML.getStringList("itemframes").stream().map(UUID::fromString).collect(Collectors.toList());
+        ITEM_FRAMES = SYSTEM_YML.getStringList("itemframes").stream().map(UUID::fromString).filter(g-> Util.getItemFrame(g)!=null).collect(Collectors.toList());
         for(int i = 0;i<FRAME_COUNT;i++)SPIN_TIME[i] = (i==0 ? 0 : SPIN_TIME[i-1]) + SYSTEM_YML.getInt("spintime."+i);
         STOCK_PER_SPIN = SYSTEM_YML.getInt("stock_per_spin",0);
         PAYMENT = SYSTEM_YML.getInt("payment",100);
@@ -58,7 +58,7 @@ public class Spin {
     }
 
     public boolean run(Player p){
-        if(isSpinning || PROBABILITY.keySet().size() == 0)return false;
+        if(isSpinning || PROBABILITY.keySet().size() == 0 || ITEM_FRAMES.size() < FRAME_COUNT)return false;
         isSpinning = true;
         Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             Vault.getEconomy().withdrawPlayer(p,PAYMENT);
@@ -87,7 +87,7 @@ public class Spin {
                    if(!category.equals("miss"))Util.setItemFrame(ITEM_FRAMES.get(1),bingoItem);
                    else memo = Util.getItemFrame(ITEM_FRAMES.get(1));
                }else if(i==SPIN_TIME[2]){
-                   if(!category.equals("miss"))Util.setItemFrame(ITEM_FRAMES.get(1),bingoItem);
+                   if(!category.equals("miss"))Util.setItemFrame(ITEM_FRAMES.get(2),bingoItem);
                    else{
                        List<ItemStack> dispItems = new ArrayList<>(DISPLAY_ITEMS);
                        dispItems.remove(memo);
