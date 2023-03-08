@@ -7,12 +7,15 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import silverassist.casinoplugin.CasinoPlugin;
 import silverassist.casinoplugin.CustomConfig;
 import silverassist.casinoplugin.Util;
 import silverassist.casinoplugin.slot.menu.admin.CategoryChoice;
 import silverassist.casinoplugin.slot.menu.admin.CategoryEdit;
 import silverassist.casinoplugin.slot.menu.admin.MainMenu;
+import silverassist.casinoplugin.slot.menu.admin.SlotList;
 
+import java.io.File;
 import java.util.List;
 
 public class SlotCommand implements CommandExecutor {
@@ -48,6 +51,7 @@ public class SlotCommand implements CommandExecutor {
                     yml.set("spintime.1",40);yml.set("spintime.2",20);yml.set("spintime.3",20);
                     yml.set("stock_per_spin",0);
                     yml.set("payment",100);
+                    yml.set("stock",0);yml.set("def_stock",100);
                     CustomConfig.saveYmlByID(id);
                     for(int i = 0;i<7;i++)CustomConfig.createYmlByID(id,String.valueOf(i));
                     Util.sendPrefixMessage(p,"§a§lスロット§d§l『"+id+"』を作成しました");
@@ -111,6 +115,20 @@ public class SlotCommand implements CommandExecutor {
 
                     }
                 }
+                break;
+
+            case "delete":
+                if(!MAIN_SYSTEM.existSlot(id)){
+                    Util.sendPrefixMessage(p,"§c§lそのスロットは存在しません");
+                    return true;
+                }
+                MAIN_SYSTEM.deleteSlot(id);
+                Util.sendPrefixMessage(p,"§c§lスロットを正常に削除しました");
+
+                break;
+            case "list":
+                new SlotList(plugin,MAIN_SYSTEM,p).open();
+                break;
         }
         return false;
     }
@@ -119,6 +137,15 @@ public class SlotCommand implements CommandExecutor {
 
         @Override
         public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+            switch (args.length){
+                case 1:
+                    return List.of("create","edit","delete","list");
+                case 2:
+                    switch (args[0]){
+                        case "edit":
+                            return MAIN_SYSTEM.getSlotList(args[1]);
+                    }
+            }
             return null;
         }
     }
