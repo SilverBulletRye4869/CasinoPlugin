@@ -83,7 +83,7 @@ public class SlotCommand implements CommandExecutor {
                             for(int i = 3;i<6;i++){if(!args[i].matches("\\d+"))return true;}
                             yml = CustomConfig.getYmlByID(id);
                             if(yml == null)return true;
-                            for(int i = 3;i<6;i++)yml.set("spintime."+(i-3),Integer.parseInt(args[i]));
+                            for(int i = 3;i<6;i++)yml.set("spintime."+(i-2),Integer.parseInt(args[i]));
                             CustomConfig.saveYmlByID(id);
                             new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
                             break;
@@ -94,10 +94,21 @@ public class SlotCommand implements CommandExecutor {
                             new CategoryChoice(plugin,MAIN_SYSTEM,p,id,Integer.parseInt(args[3])).open();
                             break;
 
+                        case "setdefaultstock":
+                            if(!args[3].matches("\\d+"))return true;
+                            yml = CustomConfig.getYmlByID(id);
+                            yml.set("def_stock",Integer.parseInt(args[3]));
+                            yml.set("stock",yml.getInt("def_stock",100));
+                            CustomConfig.saveYmlByID(id);
+                            new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
+                            break;
+
+
                         case "setconstantmoney":
                         case "setmultiplier":
                         case "setcategoryname":
                         case "setnextmode":
+                        case "setweight":
                             if(args.length<6)return true;
                             if(!args[3].matches("\\d+")||!args[4].matches("\\d+"))return true;
                             yml = CustomConfig.getYmlByID(id,args[3]);
@@ -106,6 +117,7 @@ public class SlotCommand implements CommandExecutor {
                             else if(args[2].equals("setmultiplier") && args[5].matches("\\d+\\.\\d*"))yml.set(args[4]+".multiplier",Double.parseDouble(args[5]));
                             else if(args[2].equals("setcategoryname"))yml.set(args[4]+".name",args[5]);
                             else if(args[2].equals("setnextmode"))yml.set(args[4]+".nextmode",args[5]);
+                            else if(args[2].equals("setweight") && args[5].matches("\\d+"))yml.set(args[4]+".weight",Integer.parseInt(args[5]));
                             CustomConfig.saveYmlByID(id,args[3]);
                             new CategoryEdit(plugin,MAIN_SYSTEM,p,id,Integer.parseInt(args[3]),args[4]).open();
                             break;
