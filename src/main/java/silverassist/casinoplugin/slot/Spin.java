@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import silverassist.casinoplugin.CasinoPlugin;
 import silverassist.casinoplugin.CustomConfig;
 import silverassist.casinoplugin.Util;
 import silverassist.casinoplugin.Vault;
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Spin {
-    private static final int FRAME_COUNT = 3;
+    private static final int ITEM_FRAME_COUNT = ItemFrameRegister.ITEM_FRAME_COUNT;
 
     private final JavaPlugin plugin;
     private final MainSystem_slot MAIN_SYSTEM;
@@ -27,7 +26,7 @@ public class Spin {
     private final LinkedHashMap<Integer,String> PROBABILITY = new LinkedHashMap<>();
     private final HashMap<String,ItemStack[]> CATEGORY_CONTAIN_ITEMS = new HashMap<>();
     private final List<UUID> ITEM_FRAMES;
-    private final int[] SPIN_TIME = new int[FRAME_COUNT];
+    private final int[] SPIN_TIME = new int[ITEM_FRAME_COUNT];
     private final int STOCK_PER_SPIN;
     private final int PAYMENT;
     private final HashMap<String,Integer> CONSTANT_MONEY_BY_CATEGORY = new HashMap<>();
@@ -50,7 +49,7 @@ public class Spin {
         this.NAME = SYSTEM_YML.getString("name",ID);
         this.mode = SYSTEM_YML.getString("nowMode","1");
         ITEM_FRAMES = SYSTEM_YML.getStringList("itemframes").stream().map(UUID::fromString).filter(g-> Util.getItemFrame(g)!=null).collect(Collectors.toList());
-        for(int i = 0;i<FRAME_COUNT;i++)SPIN_TIME[i] = (i==0 ? 0 : SPIN_TIME[i-1]) + SYSTEM_YML.getInt("spintime."+i);
+        for(int i = 0; i< ITEM_FRAME_COUNT; i++)SPIN_TIME[i] = (i==0 ? 0 : SPIN_TIME[i-1]) + SYSTEM_YML.getInt("spintime."+i);
         STOCK_PER_SPIN = SYSTEM_YML.getInt("stock_per_spin",0);
         PAYMENT = SYSTEM_YML.getInt("payment",100);
         SIGN_POS = SYSTEM_YML.getLocation("sign");
@@ -58,7 +57,7 @@ public class Spin {
     }
 
     public boolean run(Player p){
-        if(isSpinning || PROBABILITY.keySet().size() == 0 || ITEM_FRAMES.size() < FRAME_COUNT)return false;
+        if(isSpinning || PROBABILITY.keySet().size() == 0 || ITEM_FRAMES.size() < ITEM_FRAME_COUNT)return false;
         isSpinning = true;
         Bukkit.getScheduler().runTaskAsynchronously(plugin,()->{
             Vault.getEconomy().withdrawPlayer(p,PAYMENT);
@@ -76,8 +75,8 @@ public class Spin {
             }
 
             int fin=0;
-            for(int i = 1;i<=SPIN_TIME[FRAME_COUNT-1];i++){
-               for(int j=fin;j<FRAME_COUNT;i++) Util.setItemFrame(ITEM_FRAMES.get(j), DISPLAY_ITEMS.get((int)(Math.random() * DISPLAY_ITEMS.size())));
+            for(int i = 1; i<=SPIN_TIME[ITEM_FRAME_COUNT -1]; i++){
+               for(int j = fin; j< ITEM_FRAME_COUNT; i++) Util.setItemFrame(ITEM_FRAMES.get(j), DISPLAY_ITEMS.get((int)(Math.random() * DISPLAY_ITEMS.size())));
                if(i==SPIN_TIME[0]){
                    fin++;
                    if(!category.equals("miss"))Util.setItemFrame(ITEM_FRAMES.get(0),bingoItem);
@@ -134,6 +133,9 @@ public class Spin {
         YamlConfiguration yml = CustomConfig.getYmlByID(Slot.ID,mode);
         AtomicInteger now = new AtomicInteger(0);
         yml.getKeys(false).forEach(e->{
+            int weight = yml.getInt(e+".weight");
+            if(weight == 0)return;
+            Slot.PROBABILITY.put(now.addAndGet(weight),e);
             int size = yml.getConfigurationSection(e).getKeys(false).size();
             ItemStack[] itemStacks = new ItemStack[size];
             for(int i = 0;i<size;i++){
@@ -150,7 +152,6 @@ public class Spin {
             if(yml.get(e+".item")!=null)Slot.GAVE_ITEM_BY_CATEGORY.put(e,yml.getItemStack(e+".item"));
             if(yml.getBoolean(e+".broadcast",false))Slot.BROADCAST.add(e);
             if(yml.getBoolean(e+".title",false))Slot.TITLE.add(e);
-            Slot.PROBABILITY.put(now.addAndGet(yml.getInt(e+".weight")),e);
             Slot.CATEGORY_CONTAIN_ITEMS.put(e,itemStacks);
             Slot.NEXT_MODE.put(e,yml.getString(e+".nextmode"));
         });
