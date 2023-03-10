@@ -33,7 +33,7 @@ public class MainSystem_slot {
     }
 
     public boolean existSlot(String id){
-        return SLOTS.containsKey(id) || CustomConfig.existYml(id);
+        return SLOTS.containsKey(id) || Files.exists(Paths.get(plugin.getDataFolder()+"/data/"+id));
     }
 
     public Spin getSlot(String id){
@@ -44,10 +44,10 @@ public class MainSystem_slot {
         return SLOTS.get(id);
     }
 
-    public boolean deleteSlot(String id){
-        File file = new File(CasinoPlugin.getInstance().getDataFolder()+"/data/"+id);
+    public void deleteSlot(String id){
         SLOTS.remove(id);
-        return file.delete();
+        CustomConfig.deleteYmlByID(id);
+        Util.deleteDirectory(new File(CasinoPlugin.getInstance().getDataFolder()+"/data/"+id));
     }
 
     public List<String> getSlotList(){return getSlotList("");}
