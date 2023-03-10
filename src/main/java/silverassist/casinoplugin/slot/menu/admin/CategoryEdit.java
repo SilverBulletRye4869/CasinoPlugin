@@ -31,6 +31,9 @@ public class CategoryEdit {
     private final String CATEGORY;
     private final YamlConfiguration YML;
 
+    private boolean isGotoNext = false;
+    private boolean isDelete = false;
+
     public CategoryEdit(JavaPlugin plugin, MainSystem_slot mainSystem_slot, Player p, String id, int level,String category){
         this.plugin = plugin;
         this.MAIN_SYSTEM = mainSystem_slot;
@@ -39,11 +42,12 @@ public class CategoryEdit {
         this.LEVEL = level;
         this.CATEGORY = category;
         this.YML = CustomConfig.getYmlByID(id,String.valueOf(level));
+        P.closeInventory();
         plugin.getServer().getPluginManager().registerEvents(new listener(),plugin);
     }
 
     public void open(){
-        Inventory inv = Bukkit.createInventory(P,27, Util.PREFIX+"§d§l"+ID+"-"+LEVEL+"の編集");
+        Inventory inv = Bukkit.createInventory(P,45, Util.PREFIX+"§d§l"+ID+"-"+LEVEL+"の編集");
 
         for(int i = 0;i<18;i++){
             if(YML.get(CATEGORY+"."+i)==null)break;
@@ -54,10 +58,13 @@ public class CategoryEdit {
         inv.setItem(20,boolItem.apply("当選時ブロードキャスト",YML.getBoolean(CATEGORY+".broadcast",false)));
         inv.setItem(21,boolItem.apply("当選時タイトル",YML.getBoolean(CATEGORY+".title",false)));
         inv.setItem(22,Util.createItem(Material.NAME_TAG,"§f§lカテゴリ名変更"));
-        inv.setItem(23,Util.createItem(Material.DROPPER,"§a§lモード遷移先を変更",List.of("§f§l現在: "+YML.getString(CATEGORY+".nextmode"))));
-        inv.setItem(24,Util.createItem(Material.LAVA_BUCKET,"§c§lこのカテゴリを削除"));
+        inv.setItem(23,Util.createItem(Material.END_PORTAL_FRAME,"§a§lモード遷移先を変更",List.of("§f§l現在: "+YML.getString(CATEGORY+".nextmode"))));
+        inv.setItem(24,Util.createItem(Material.DROPPER,"§7§l比重を設定",List.of("§f§l現在: "+YML.getInt(CATEGORY+".weight",1))));
         inv.setItem(25,Util.createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"§b§l当選時アイテム⇒",List.of("§fこのカテゴリの目が出たときに","§f貰えるアイテム")));
         inv.setItem(26,YML.getItemStack(CATEGORY+".item"));
+        for(int i = 27;i<44;i++)inv.setItem(i,Util.createItem(Material.GRAY_STAINED_GLASS_PANE,"§r"));
+        inv.setItem(44,Util.createItem(Material.LAVA_BUCKET,"§c§lこのカテゴリを削除"));
+
 
         Util.delayInvOpen(P,inv);
 
@@ -69,10 +76,11 @@ public class CategoryEdit {
         public void onInventoryClick(InventoryClickEvent e){
             if(!P.equals(e.getWhoClicked()) || e.getCurrentItem() == null || !e.getClickedInventory().getType().equals(InventoryType.CHEST))return;
             int slot = e.getSlot();
-            if(slot>17 && slot<26){
+            if(slot>17 && slot<45 && slot !=26){
                 e.setCancelled(true);
                 switch (slot){
                     case 18:
+                        isGotoNext = true;
                         P.closeInventory();
                         Util.sendPrefixMessage(P,"§e§l固定報酬を変更するには以下のコマンドを実行してください");
                         Util.sendPrefixMessage(P,"§a/slot edit <id> setconstantmoney <level> <category-id> <固定報酬の額(整数)>");
@@ -80,6 +88,7 @@ public class CategoryEdit {
                         break;
 
                     case 19:
+                        isGotoNext = true;
                         P.closeInventory();
                         Util.sendPrefixMessage(P,"§e§l倍率を設定するには以下のコマンドを実行してください");
                         Util.sendPrefixMessage(P,"§a/slot edit <id> setmultiplier <level> <category-id> <倍率(正の実数)>");
@@ -95,6 +104,7 @@ public class CategoryEdit {
                         break;
 
                     case 22:
+                        isGotoNext = true;
                         P.closeInventory();
                         Util.sendPrefixMessage(P,"§e§lカテゴリ名を変更するには以下のコマンドを実行してください");
                         Util.sendPrefixMessage(P,"§a/slot edit <id> setcategoryname <level> <category-id> <名前>");
@@ -102,6 +112,7 @@ public class CategoryEdit {
                         break;
 
                     case 23:
+                        isGotoNext = true;
                         P.closeInventory();
                         Util.sendPrefixMessage(P,"§e§l遷移先を変更するには以下のコマンドを実行してください");
                         Util.sendPrefixMessage(P,"§a/slot edit <id> setnextmode <level> <category-id> <次のレベル>");
@@ -109,7 +120,15 @@ public class CategoryEdit {
                         break;
 
                     case 24:
+                        isGotoNext = true;
+                        P.closeInventory();
+                        Util.sendPrefixMessage(P,"§e§l比重を設定するには以下のコマンドを実行してください");
+                        Util.sendPrefixMessage(P,"§a/slot edit <id> setweight <level> <category-id> <比重(整数)>");
+                        Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setweight "+LEVEL+" "+CATEGORY+" ");
+                        break;
+                    case 44:
                         YML.set(CATEGORY,null);
+                        isDelete = true;
                         CustomConfig.saveYmlByID(ID,String.valueOf(LEVEL));
                         P.closeInventory();
                         break;
@@ -122,17 +141,23 @@ public class CategoryEdit {
         public void onInventoryClose(InventoryCloseEvent e){
             if(!P.equals(e.getPlayer()))return;
             HandlerList.unregisterAll(this);
-            boolean isFin = false;
-            Inventory inv = e.getInventory();
-            for(int i = 0;i<18;i++){
-                ItemStack item = inv.getItem(i);
-                if(item == null)isFin = true;
-                YML.set(CATEGORY+"."+i,isFin ? null : item);
-            }
-            YML.set(CATEGORY+".item",inv.getItem(26));
-            CustomConfig.saveYmlByID(ID,String.valueOf(LEVEL));
 
-            new CategoryChoice(plugin,MAIN_SYSTEM,P,ID,LEVEL).open();
+            if(!isDelete) {
+                Inventory inv = e.getInventory();
+                int cnt = 0;
+                for (int i = 0; i < 18; i++) {
+                    ItemStack item = inv.getItem(i);
+                    if (item != null) {
+                        YML.set(CATEGORY + "." + cnt, item);
+                        cnt++;
+                    }
+
+                }
+                YML.set(CATEGORY + ".item", inv.getItem(26));
+                CustomConfig.saveYmlByID(ID, String.valueOf(LEVEL));
+            }
+
+            if(!isGotoNext)new CategoryChoice(plugin,MAIN_SYSTEM,P,ID,LEVEL).open();
 
         }
     }

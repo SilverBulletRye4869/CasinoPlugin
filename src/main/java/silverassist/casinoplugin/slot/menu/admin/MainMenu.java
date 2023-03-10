@@ -32,14 +32,14 @@ public class MainMenu {
     }
 
     public void open(){
-        Inventory inv = Bukkit.createInventory(P,54, Util.PREFIX+"§d§l"+ID+"§a§lの編集");
+        Inventory inv = Bukkit.createInventory(P,45, Util.PREFIX+"§d§l"+ID+"§a§lの編集");
         Util.invFill(inv);
         inv.setItem(10,Util.createItem(Material.NAME_TAG,"§f§lスロット名を編集"));
         inv.setItem(13,Util.createItem(Material.GOLD_INGOT,"§e§lスロット料金を編集"));
         inv.setItem(16,Util.createItem(Material.CHEST,"§6§lスロットの目を編集"));
-        inv.setItem(19,Util.createItem(Material.STICK,"§c§l額縁を設定する棒を取得",null, Map.of(Enchantment.DAMAGE_ALL,1)));
-        inv.setItem(22,Util.createItem(Material.CLOCK,"§e§l回転時間を調整"));
-        inv.setItem(25,Util.createItem(Material.BARRIER,"§r"));
+        inv.setItem(28,Util.createItem(Material.STICK,"§c§l額縁を設定する棒を取得",null, Map.of(Enchantment.DAMAGE_ALL,1)));
+        inv.setItem(31,Util.createItem(Material.CLOCK,"§e§l回転時間を調整"));
+        inv.setItem(34,Util.createItem(Material.DIAMOND_BLOCK,"§b§l初期ストックを変更"));
         Util.delayInvOpen(P,inv);
     }
 
@@ -68,13 +68,13 @@ public class MainMenu {
                     new LevelChoice(plugin,MAIN_SYSTEM,P,ID).open();
                     break;
 
-                case 19:
+                case 28:
                     P.closeInventory();
                     P.getInventory().addItem(MAIN_SYSTEM.FRAME_SET_STICK.apply(ID));
                     Util.sendPrefixMessage(P,"§6§l額縁設定棒§a§lを付与しました");
                     break;
 
-                case 22:
+                case 31:
 
                     P.closeInventory();
                     Util.sendPrefixMessage(P,"§a§lスロット回転時間を変更するには次のコマンドを実行してください");

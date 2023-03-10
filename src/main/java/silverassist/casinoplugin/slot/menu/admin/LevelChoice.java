@@ -20,16 +20,19 @@ public class LevelChoice {
     private final Player P;
     private final String ID;
 
+    private boolean isGotoNext = false;
+
     public LevelChoice(JavaPlugin plugin, MainSystem_slot mainSystem_slot, Player p,String id){
         this.plugin = plugin;
         this.MAIN_SYSTEM = mainSystem_slot;
         this.P = p;
         this.ID = id;
+        p.closeInventory();
         plugin.getServer().getPluginManager().registerEvents(new listener(),plugin);
     }
 
     public void open(){
-        Inventory inv = Bukkit.createInventory(P,54,"§d§lレベル選択");
+        Inventory inv = Bukkit.createInventory(P,27,"§d§lレベル選択");
         Util.invFill(inv);
         for(int i=0;i<7;i++)inv.setItem(10+i,Util.createItem(Material.DROPPER,"§6§lレベル: "+(i+1)));
         Util.delayInvOpen(P,inv);
@@ -41,14 +44,17 @@ public class LevelChoice {
             if(!P.equals(e.getWhoClicked()) || e.getCurrentItem() == null || !e.getClickedInventory().getType().equals(InventoryType.CHEST))return;
             e.setCancelled(true);
             int slot = e.getSlot();
-            if(slot>9 && slot<17)new CategoryChoice(plugin,MAIN_SYSTEM,P,ID,slot-10);
+            if(slot>9 && slot<17){
+                isGotoNext = true;
+                new CategoryChoice(plugin,MAIN_SYSTEM,P,ID,slot-10).open();
+            }
         }
 
         @EventHandler
         public void onInventoryClose(InventoryCloseEvent e){
             if(!P.equals(e.getPlayer()))return;
             HandlerList.unregisterAll(this);
-            new MainMenu(plugin,MAIN_SYSTEM,P,ID).open();
+            if(!isGotoNext)new MainMenu(plugin,MAIN_SYSTEM,P,ID).open();
         }
     }
 }

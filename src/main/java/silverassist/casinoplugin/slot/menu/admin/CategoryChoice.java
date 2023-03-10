@@ -26,6 +26,8 @@ public class CategoryChoice {
     private final int LEVEL;
     private final YamlConfiguration YML;
 
+    private boolean isGotoNext = false;
+
     public CategoryChoice(JavaPlugin plugin, MainSystem_slot mainSystem_slot, Player p, String id, int level){
         this.plugin = plugin;
         this.MAIN_SYSTEM = mainSystem_slot;
@@ -33,6 +35,7 @@ public class CategoryChoice {
         this.ID = id;
         this.LEVEL = level;
         this.YML = CustomConfig.getYmlByID(ID, String.valueOf(LEVEL));
+        P.closeInventory();
         plugin.getServer().getPluginManager().registerEvents(new listener(),plugin);
     }
 
@@ -63,15 +66,18 @@ public class CategoryChoice {
                 YML.set(slot+".multiplier",1.00);
                 YML.set(slot+".broadcast",false);
                 YML.set(slot+".title",false);
-                YML.set(slot+".weight",0);
+                YML.set(slot+".weight",1);
                 YML.set(slot+".nextmode",LEVEL);
                 CustomConfig.saveYmlByID(ID, String.valueOf(LEVEL));
+                e.setCurrentItem(null);
                 e.getInventory().setItem(slot,Util.createItem(Material.PAPER,"§e§lカテゴリー: "+(slot+1)));
-                if(slot<16)e.getInventory().setItem(slot,Util.getPlusBanner());
+                if(slot<16)e.getInventory().setItem(slot+1,Util.getPlusBanner());
 
             }else if(slot<17){
+                isGotoNext = true;
                 new CategoryEdit(plugin,MAIN_SYSTEM,P,ID,LEVEL,String.valueOf(slot)).open();
             }else if(slot == 17){
+                isGotoNext =true;
                 P.closeInventory();
                 Util.sendPrefixMessage(P,"§e§lハズレの比重を設定するには以下のコマンドを実行してください");
                 Util.sendPrefixMessage(P,"§a/slot edit <id>  setmissweight <level> <比重(整数)>");
@@ -84,7 +90,7 @@ public class CategoryChoice {
             if(!P.equals(e.getPlayer()))return;
 
             HandlerList.unregisterAll(this);
-            new LevelChoice(plugin,MAIN_SYSTEM,P,ID).open();
+            if(!isGotoNext)new LevelChoice(plugin,MAIN_SYSTEM,P,ID).open();
         }
 
     }
