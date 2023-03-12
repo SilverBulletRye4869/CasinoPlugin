@@ -22,22 +22,20 @@ public class SlotSign {
         plugin.getServer().getPluginManager().registerEvents(new listener(),plugin);
     }
 
-    public boolean update(Location loc,int stockAmount){
-        if(loc.getBlock()==null || !(loc.getBlock().getState() instanceof Sign))return false;
-        Sign sign = (Sign)loc.getBlock().getState();
+    public void update(Sign sign,int stockAmount){
         sign.setLine(2,"§a§lSTOCK: §d§l"+stockAmount);
-        return true;
     }
 
     private class listener implements Listener{
         @EventHandler
         public void onSignChange(SignChangeEvent e){
             String[] lines = e.getLines();
-            if(!lines[0].equals("slot") || MAIN_SYSTEM.existSlot(lines[3]))return;
+            if(!lines[0].equals("slot") || !MAIN_SYSTEM.existSlot(lines[3]))return;
             YamlConfiguration yml = CustomConfig.getYmlByID(lines[3]);
             e.setLine(0,"§6§l"+yml.getString("name"));
             e.setLine(1,"§a§l料金: §e§l"+yml.getInt("payment")+"§a§l/回");
             e.setLine(2,"§a§lSTOCK: §d§l"+yml.getInt("stock"));
+            e.getBlock().getState().update();
             yml.set("sign",e.getBlock().getLocation());
             CustomConfig.saveYmlByID(lines[3]);
         }

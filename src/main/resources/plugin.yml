@@ -2,3 +2,10 @@ name: CasinoPlugin
 version: '${project.version}'
 main: silverassist.casinoplugin.CasinoPlugin
 api-version: 1.19
+
+commands:
+  slot:
+    permission: slot.admin
+
+  test:
+    permission: true
