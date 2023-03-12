@@ -47,13 +47,13 @@ public class SlotCommand implements CommandExecutor {
                 if(!MAIN_SYSTEM.existSlot(id)){
                     yml = CustomConfig.createYmlByID(id);
                     yml.set("name",id);
-                    yml.set("nowmode","1");
+                    yml.set("nowmode","0");
                     yml.set("spintime.1",40);yml.set("spintime.2",20);yml.set("spintime.3",20);
                     yml.set("stock_per_spin",0);
                     yml.set("payment",100);
                     yml.set("stock",0);yml.set("def_stock",100);
                     CustomConfig.saveYmlByID(id);
-                    for(int i = 0;i<7;i++)CustomConfig.createYmlByID(id,String.valueOf(i));
+                    for(int i = 0;i<7;i++){CustomConfig.createYmlByID(id,String.valueOf(i)).set("miss.weight",1);CustomConfig.saveYmlByID(id);}
                     Util.sendPrefixMessage(p,"§a§lスロット§d§l『"+id+"』を作成しました");
                 }
             case "edit":
@@ -138,6 +138,14 @@ public class SlotCommand implements CommandExecutor {
                 Util.sendPrefixMessage(p,"§c§lスロットを正常に削除しました");
 
                 break;
+
+            case "reloadslot":
+                if (!MAIN_SYSTEM.existSlot(id)) {
+                    Util.sendPrefixMessage(p,"§c§lそのスロットは存在しません");
+                    return true;
+                }
+                MAIN_SYSTEM.reloadSlot(id);
+                Util.sendPrefixMessage(p,"§a§lそのスロットをreloadしました");
             case "list":
                 new SlotList(plugin,MAIN_SYSTEM,p).open();
                 break;
