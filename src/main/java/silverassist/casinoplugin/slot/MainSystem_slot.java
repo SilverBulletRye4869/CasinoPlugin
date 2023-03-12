@@ -30,6 +30,7 @@ public class MainSystem_slot {
     public MainSystem_slot(JavaPlugin plugin){
         this.plugin = plugin;
         this.SIGN_SYSTEM = new SlotSign(plugin,this);
+        new ItemFrameRegister(plugin,this);
     }
 
     public boolean existSlot(String id){
@@ -63,8 +64,17 @@ public class MainSystem_slot {
         return stream.map(Path::toString).filter(g->g.matches(startRegex)).collect(Collectors.toList());
     }
 
+    public boolean reloadSlot(String id){
+        if(!existSlot(id))return false;
+        SLOTS.put(id,new Spin(plugin,this,id));
+        return true;
+    }
+
+
     public boolean spin(String id, Player p){
-        if(!SLOTS.containsKey(id))return false;
+        if(!SLOTS.containsKey(id)){
+            if(!reloadSlot(id))return false;
+        }
         boolean result = SLOTS.get(id).run(p);
         return result;
     }
