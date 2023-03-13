@@ -50,7 +50,7 @@ public class CategoryEdit {
         Inventory inv = Bukkit.createInventory(P,45, Util.PREFIX+"§d§l"+ID+"-"+LEVEL+"の編集");
 
         for(int i = 0;i<18;i++){
-            if(YML.get(CATEGORY+"."+i)==null)break;
+            if(YML.get(CATEGORY+".display."+i)==null)break;
             inv.setItem(i,YML.getItemStack(CATEGORY+"."+i));
         }
         inv.setItem(18,Util.createItem(Material.GOLD_INGOT,"§6§l固定報酬を設定", List.of("§e§l現在: "+YML.getInt(CATEGORY+".constant_money",0),"§c0で無効化")));
@@ -58,7 +58,7 @@ public class CategoryEdit {
         inv.setItem(20,boolItem.apply("当選時ブロードキャスト",YML.getBoolean(CATEGORY+".broadcast",false)));
         inv.setItem(21,boolItem.apply("当選時タイトル",YML.getBoolean(CATEGORY+".title",false)));
         inv.setItem(22,Util.createItem(Material.NAME_TAG,"§f§lカテゴリ名変更"));
-        inv.setItem(23,Util.createItem(Material.END_PORTAL_FRAME,"§a§lモード遷移先を変更",List.of("§f§l現在: "+YML.getString(CATEGORY+".nextmode"))));
+        inv.setItem(23,Util.createItem(Material.END_PORTAL_FRAME,"§a§lモード遷移先を変更",List.of("§f§l現在: "+(YML.getInt(CATEGORY+".nextmode")+1))));
         inv.setItem(24,Util.createItem(Material.DROPPER,"§7§l比重を設定",List.of("§f§l現在: "+YML.getInt(CATEGORY+".weight",1))));
         inv.setItem(25,Util.createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"§b§l当選時アイテム⇒",List.of("§fこのカテゴリの目が出たときに","§f貰えるアイテム")));
         inv.setItem(26,YML.getItemStack(CATEGORY+".item"));
@@ -148,7 +148,7 @@ public class CategoryEdit {
                 for (int i = 0; i < 18; i++) {
                     ItemStack item = inv.getItem(i);
                     if (item != null) {
-                        YML.set(CATEGORY + "." + cnt, item);
+                        YML.set(CATEGORY + ".display." + cnt, item);
                         cnt++;
                     }
 
