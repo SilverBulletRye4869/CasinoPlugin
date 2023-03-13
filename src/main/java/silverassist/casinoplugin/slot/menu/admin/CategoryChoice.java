@@ -81,7 +81,7 @@ public class CategoryChoice {
                 P.closeInventory();
                 Util.sendPrefixMessage(P,"§e§lハズレの比重を設定するには以下のコマンドを実行してください");
                 Util.sendPrefixMessage(P,"§a/slot edit <id>  setmissweight <level> <比重(整数)>");
-                Util.sendSuggestMessage(P,"§d§l[ここをクリックで自動入力]","§a/slot edit "+ID+" setmissweight "+LEVEL+" ");
+                Util.sendSuggestMessage(P,"§d§l[ここをクリックで自動入力]","/slot edit "+ID+" setmissweight "+LEVEL+" ");
             }
         }
 
