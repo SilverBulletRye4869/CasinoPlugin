@@ -28,6 +28,8 @@ public class ItemFrameRegister implements Listener {
         Entity entity = e.getRightClicked();
         if(!e.getPlayer().isOp() || entity == null || !(entity instanceof ItemFrame))return;
         String uuidStr = entity.getUniqueId().toString();
+        ItemFrame itemFrame = (ItemFrame) entity;
+        itemFrame.setFixed(true);
         ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
         ItemMeta meta;
         if(!item.hasItemMeta() || !(meta = item.getItemMeta()).hasLore())return;
