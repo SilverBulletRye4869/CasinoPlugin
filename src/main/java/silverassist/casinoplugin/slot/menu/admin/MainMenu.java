@@ -35,11 +35,12 @@ public class MainMenu {
         Inventory inv = Bukkit.createInventory(P,45, Util.PREFIX+"§d§l"+ID+"§a§lの編集");
         Util.invFill(inv);
         inv.setItem(10,Util.createItem(Material.NAME_TAG,"§f§lスロット名を編集"));
-        inv.setItem(13,Util.createItem(Material.GOLD_INGOT,"§e§lスロット料金を編集"));
-        inv.setItem(16,Util.createItem(Material.CHEST,"§6§lスロットの目を編集"));
-        inv.setItem(28,Util.createItem(Material.STICK,"§c§l額縁を設定する棒を取得",null, Map.of(Enchantment.DAMAGE_ALL,1)));
-        inv.setItem(31,Util.createItem(Material.CLOCK,"§e§l回転時間を調整"));
-        inv.setItem(34,Util.createItem(Material.DIAMOND_BLOCK,"§b§l初期ストックを変更"));
+        inv.setItem(12,Util.createItem(Material.GOLD_INGOT,"§e§lスロット料金を編集"));
+        inv.setItem(14,Util.createItem(Material.CHEST,"§6§lスロットの目を編集"));
+        inv.setItem(16,Util.createItem(Material.STICK,"§c§l額縁を設定する棒を取得",null, Map.of(Enchantment.DAMAGE_ALL,1)));
+        inv.setItem(18,Util.createItem(Material.CLOCK,"§e§l回転時間を調整"));
+        inv.setItem(30,Util.createItem(Material.DIAMOND_BLOCK,"§b§l初期ストックを変更"));
+        inv.setItem(32,Util.createItem(Material.EMERALD_BLOCK,"§b§l回転毎のストックを変更"));
         Util.delayInvOpen(P,inv);
     }
 
@@ -56,30 +57,44 @@ public class MainMenu {
                     Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setname ");
                     break;
 
-                case 13:
+                case 12:
                     P.closeInventory();
                     Util.sendPrefixMessage(P,"§a§lスロット料金を変更するには次のコマンドを実行してください");
                     Util.sendPrefixMessage(P,"§e/slot edit <id> setpayment <料金(整数)>");
                     Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setpayment ");
                     break;
 
-                case 16:
+                case 14:
                     //たぶんこの先一番大変になる所
                     new LevelChoice(plugin,MAIN_SYSTEM,P,ID).open();
                     break;
 
-                case 28:
+                case 16:
                     P.closeInventory();
                     P.getInventory().addItem(MAIN_SYSTEM.FRAME_SET_STICK.apply(ID));
                     Util.sendPrefixMessage(P,"§6§l額縁設定棒§a§lを付与しました");
                     break;
 
-                case 31:
+                case 28:
 
                     P.closeInventory();
                     Util.sendPrefixMessage(P,"§a§lスロット回転時間を変更するには次のコマンドを実行してください");
                     Util.sendPrefixMessage(P,"§e/slot edit <id> setspintime <1つめまでの時間(整数)> <1~2の時間(整数)> <2~3の時間(整数)>");
                     Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setspintime ");
+                    break;
+
+                case 30:
+                    P.closeInventory();
+                    Util.sendPrefixMessage(P,"§a§lスロットの初期ストックを変更するには次のコマンドを実行してください");
+                    Util.sendPrefixMessage(P,"§e/slot edit <id> setdefaultstock <初期ストック(整数)>");
+                    Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setdefaultstock ");
+                    break;
+
+                case 32:
+                    P.closeInventory();
+                    Util.sendPrefixMessage(P,"§a§l回転毎のストック貯蔵量を変更するには次のコマンドを実行してください");
+                    Util.sendPrefixMessage(P,"§e/slot edit <id> setstock <ストック量(整数)>");
+                    Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setstock ");
                     break;
             }
         }
