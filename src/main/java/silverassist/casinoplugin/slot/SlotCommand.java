@@ -103,6 +103,13 @@ public class SlotCommand implements CommandExecutor {
                             new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
                             break;
 
+                        case "setstock":
+                            if(!args[3].matches("\\d+"))return true;
+                            yml = CustomConfig.getYmlByID(id);
+                            yml.set("stock",Integer.parseInt(args[3]));
+                            CustomConfig.saveYmlByID(id);
+                            new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
+                            break;
 
                         case "setconstantmoney":
                         case "setmultiplier":
