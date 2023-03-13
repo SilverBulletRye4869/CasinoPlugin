@@ -24,6 +24,7 @@ public class SlotSign {
 
     public void update(Sign sign,int stockAmount){
         sign.setLine(2,"§a§lSTOCK: §d§l"+stockAmount);
+        sign.update(true);
     }
 
     private class listener implements Listener{
