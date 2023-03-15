@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.casinoplugin.CustomConfig;
 import silverassist.casinoplugin.Util;
@@ -58,7 +59,7 @@ public class CategoryChoice {
         @EventHandler
         public void onInventoryClick(InventoryClickEvent e){
             if(!P.equals(e.getWhoClicked()) || e.getCurrentItem() == null || !e.getClickedInventory().getType().equals(InventoryType.CHEST))return;
-
+            e.setCancelled(true);
             int slot = e.getSlot();
             if(e.getCurrentItem().getType().equals(Material.WHITE_BANNER)){
                 YML.set(slot+".name",String.valueOf(slot+1));
@@ -69,7 +70,6 @@ public class CategoryChoice {
                 YML.set(slot+".weight",1);
                 YML.set(slot+".nextmode",LEVEL);
                 CustomConfig.saveYmlByID(ID, String.valueOf(LEVEL));
-                e.setCurrentItem(null);
                 e.getInventory().setItem(slot,Util.createItem(Material.PAPER,"§e§lカテゴリー: "+(slot+1)));
                 if(slot<16)e.getInventory().setItem(slot+1,Util.getPlusBanner());
 
