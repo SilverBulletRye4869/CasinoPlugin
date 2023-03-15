@@ -32,6 +32,7 @@ public class SlotList {
         this.MAIN_SYSTEM = mainSystem_slot;
         this.P = p;
         fileNames = mainSystem_slot.getSlotList();
+        System.out.println( mainSystem_slot.getSlotList());
         plugin.getServer().getPluginManager().registerEvents(new listener(),plugin);
     }
 
@@ -39,7 +40,7 @@ public class SlotList {
     public void open(int page){
         this.page = page;
         Inventory inv = Bukkit.createInventory(P,54,"§d§lスロットリスト");
-        for(int i = 45*page; i<45*(page+1);i++)inv.setItem(i%45, Util.createItem(Material.PAPER,"§6§l"+fileNames.get(i)));
+        for(int i = 45*page; i<Math.min(45*(page+1),fileNames.size());i++)inv.setItem(i%45, Util.createItem(Material.PAPER,"§6§l"+fileNames.get(i)));
         for(int i=45;i<54;i++)inv.setItem(i,Util.GUI_BG);
         if(page>0)inv.setItem(45,Util.createItem(Material.RED_STAINED_GLASS_PANE,"§c§l前へ"));
         if(page < (fileNames.size()-1)/45)inv.setItem(53,Util.createItem(Material.LIME_STAINED_GLASS_PANE,"§a§l次へ"));
