@@ -7,7 +7,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import silverassist.casinoplugin.CasinoPlugin;
 import silverassist.casinoplugin.CustomConfig;
 import silverassist.casinoplugin.Util;
 import silverassist.casinoplugin.slot.menu.admin.CategoryChoice;
@@ -15,7 +14,6 @@ import silverassist.casinoplugin.slot.menu.admin.CategoryEdit;
 import silverassist.casinoplugin.slot.menu.admin.MainMenu;
 import silverassist.casinoplugin.slot.menu.admin.SlotList;
 
-import java.io.File;
 import java.util.List;
 
 public class SlotCommand implements CommandExecutor {
@@ -35,7 +33,7 @@ public class SlotCommand implements CommandExecutor {
         if(!(sender instanceof Player))return true;
         Player p = (Player) sender;
         if(args.length < 2){
-            //ヘルプ
+            new SlotList(plugin,MAIN_SYSTEM,p).open();
             return true;
         }
 
@@ -53,7 +51,7 @@ public class SlotCommand implements CommandExecutor {
                     yml.set("payment",100);
                     yml.set("stock",0);yml.set("def_stock",100);
                     CustomConfig.saveYmlByID(id);
-                    for(int i = 0;i<7;i++){CustomConfig.createYmlByID(id,String.valueOf(i)).set("miss.weight",1);CustomConfig.saveYmlByID(id);}
+                    for(int i = 0;i<7;i++){CustomConfig.createYmlByID(id,String.valueOf(i)).set("miss.weight",1);CustomConfig.saveYmlByID(id,String.valueOf(i));}
                     Util.sendPrefixMessage(p,"§a§lスロット§d§l『"+id+"』を作成しました");
                 }
             case "edit":
@@ -91,6 +89,7 @@ public class SlotCommand implements CommandExecutor {
                         case "setmissweight":
                             if(args.length<5 || !args[3].matches("\\d+") || !args[4].matches("\\d+"))return true;
                             CustomConfig.getYmlByID(id,args[3]).set("miss.weight",Integer.parseInt(args[4]));
+                            CustomConfig.saveYmlByID(id,args[3]);
                             new CategoryChoice(plugin,MAIN_SYSTEM,p,id,Integer.parseInt(args[3])).open();
                             break;
 
@@ -103,10 +102,10 @@ public class SlotCommand implements CommandExecutor {
                             new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
                             break;
 
-                        case "setstock":
+                        case "setstockperspin":
                             if(!args[3].matches("\\d+"))return true;
                             yml = CustomConfig.getYmlByID(id);
-                            yml.set("stock",Integer.parseInt(args[3]));
+                            yml.set("stock_per_spin",Integer.parseInt(args[3]));
                             CustomConfig.saveYmlByID(id);
                             new MainMenu(plugin,MAIN_SYSTEM,p,id).open();
                             break;
@@ -121,7 +120,7 @@ public class SlotCommand implements CommandExecutor {
                             yml = CustomConfig.getYmlByID(id,args[3]);
                             if(yml == null)return true;
                             if(args[2].equals("setconstantmoney") && args[5].matches("\\d+"))yml.set(args[4]+".constant_money",Integer.parseInt(args[5]));
-                            else if(args[2].equals("setmultiplier") && args[5].matches("\\d+\\.\\d*"))yml.set(args[4]+".multiplier",Double.parseDouble(args[5]));
+                            else if(args[2].equals("setmultiplier") && args[5].matches("\\d+\\.?\\d*"))yml.set(args[4]+".multiplier",Double.parseDouble(args[5]));
                             else if(args[2].equals("setcategoryname"))yml.set(args[4]+".name",args[5]);
                             else if(args[2].equals("setnextmode"))yml.set(args[4]+".nextmode",args[5]);
                             else if(args[2].equals("setweight") && args[5].matches("\\d+"))yml.set(args[4]+".weight",Integer.parseInt(args[5]));
@@ -153,9 +152,8 @@ public class SlotCommand implements CommandExecutor {
                 }
                 MAIN_SYSTEM.reloadSlot(id);
                 Util.sendPrefixMessage(p,"§a§lそのスロットをreloadしました");
-            case "list":
-                new SlotList(plugin,MAIN_SYSTEM,p).open();
                 break;
+
         }
         return false;
     }
@@ -166,7 +164,7 @@ public class SlotCommand implements CommandExecutor {
         public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
             switch (args.length){
                 case 1:
-                    return List.of("create","edit","delete","list");
+                    return List.of("create","edit","delete","reload");
                 case 2:
                     switch (args[0]){
                         case "edit":
