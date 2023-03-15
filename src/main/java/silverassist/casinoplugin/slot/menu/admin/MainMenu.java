@@ -38,9 +38,10 @@ public class MainMenu {
         inv.setItem(12,Util.createItem(Material.GOLD_INGOT,"§e§lスロット料金を編集"));
         inv.setItem(14,Util.createItem(Material.CHEST,"§6§lスロットの目を編集"));
         inv.setItem(16,Util.createItem(Material.STICK,"§c§l額縁を設定する棒を取得",null, Map.of(Enchantment.DAMAGE_ALL,1)));
-        inv.setItem(18,Util.createItem(Material.CLOCK,"§e§l回転時間を調整"));
+        inv.setItem(28,Util.createItem(Material.CLOCK,"§e§l回転時間を調整"));
         inv.setItem(30,Util.createItem(Material.DIAMOND_BLOCK,"§b§l初期ストックを変更"));
         inv.setItem(32,Util.createItem(Material.EMERALD_BLOCK,"§b§l回転毎のストックを変更"));
+        inv.setItem(34,Util.createItem(Material.COMPASS,"§a§lスロットをリロード"));
         Util.delayInvOpen(P,inv);
     }
 
@@ -93,8 +94,13 @@ public class MainMenu {
                 case 32:
                     P.closeInventory();
                     Util.sendPrefixMessage(P,"§a§l回転毎のストック貯蔵量を変更するには次のコマンドを実行してください");
-                    Util.sendPrefixMessage(P,"§e/slot edit <id> setstock <ストック量(整数)>");
-                    Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setstock ");
+                    Util.sendPrefixMessage(P,"§e/slot edit <id> setstockperspin <ストック量(整数)>");
+                    Util.sendSuggestMessage(P,"§d§l[ここをクリックして自動入力]","/slot edit "+ID+" setstockperspin ");
+                    break;
+
+                case 34:
+                    MAIN_SYSTEM.reloadSlot(ID);
+                    Util.sendPrefixMessage(P,"§a§lスロットを正常にリロードしました");
                     break;
             }
         }
