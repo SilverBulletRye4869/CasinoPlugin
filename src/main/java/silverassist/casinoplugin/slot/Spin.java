@@ -28,6 +28,7 @@ public class Spin {
     private final HashMap<String,ItemStack[]> CATEGORY_CONTAIN_ITEMS = new HashMap<>();
     private final List<ItemFrame> ITEM_FRAMES;
     private final int[] SPIN_TIME = new int[ITEM_FRAME_COUNT];
+    private final int DEFAULT_STOCK;
     private final int STOCK_PER_SPIN;
     private final int PAYMENT;
     private final HashMap<String,Integer> CONSTANT_MONEY_BY_CATEGORY = new HashMap<>();
@@ -53,6 +54,7 @@ public class Spin {
         this.mode = nowmode;
         ITEM_FRAMES = SYSTEM_YML.getStringList("itemframes").stream().map(UUID::fromString).map(g->(ItemFrame)Bukkit.getEntity(g)).collect(Collectors.toList());
         for(int i = 0; i< ITEM_FRAME_COUNT; i++)SPIN_TIME[i] = (i==0 ? 0 : SPIN_TIME[i-1]) + SYSTEM_YML.getInt("spintime."+(i+1));
+        DEFAULT_STOCK = SYSTEM_YML.getInt("def_stock",0);
         STOCK_PER_SPIN = SYSTEM_YML.getInt("stock_per_spin",0);
         PAYMENT = SYSTEM_YML.getInt("payment",100);
         SIGN = (Sign)SYSTEM_YML.getLocation("sign").getBlock().getState();
@@ -119,11 +121,12 @@ public class Spin {
                 if(wonMoney==0)wonMoney=(int)(nowStock * MULTIPLIER_BY_CATEGORY.get(category_f));
                 String bingoType = (bingoItem_f.getItemMeta().hasDisplayName() ? bingoItem_f.getItemMeta().getDisplayName() : bingoItem_f.getType().toString());
                 Util.sendPrefixMessage(p,"§a§lおめでとうございます！！§d§l『"+bingoType+"』§a§l揃いです！");
+                Util.sendPrefixMessage(p,"§6"+wonMoney+"円§eを獲得しました。");
                 Vault.getEconomy().depositPlayer(p,wonMoney);
                 if(GAVE_ITEM_BY_CATEGORY.containsKey(category_f))p.getInventory().addItem(GAVE_ITEM_BY_CATEGORY.get(category_f));
                 if(BROADCAST.contains(category_f))Util.broadcast("§b§l"+p.getName()+"§a§lが§d§l『"+NAME+"』§a§lで、§6§l"+bingoType+"揃い§a§lにより§e§l"+wonMoney+"円§a§l獲得！！");
                 if(TITLE.contains(category_f))Util.title("§c§l"+NAME+"§6§lで当選！","§b§l"+p.getName()+"§a§lが§e§l"+wonMoney+"円§a§l獲得！！");
-                SYSTEM_YML.set("stock",SYSTEM_YML.getInt("def_stock",0));
+                SYSTEM_YML.set("stock",DEFAULT_STOCK);
                 CustomConfig.saveYmlByID(ID);
                 setMode(NEXT_MODE.get(category_f));
             }
@@ -166,20 +169,20 @@ public class Spin {
             Slot.CATEGORY_CONTAIN_ITEMS.put(e,itemStacks);
             Slot.NEXT_MODE.put(e,yml.getString(e+".nextmode"));
         });
-        Slot.PROBABILITY.put(now.addAndGet(yml.getInt("miss.weight",1)),"miss");
+        if(yml.getInt("miss.weight")>0)Slot.PROBABILITY.put(now.addAndGet(yml.getInt("miss.weight",1)),"miss");
         Slot.categoryRandomMax = now.get();
     }
 
 
     public int getAndUpdateStock(boolean toAdd,boolean isBingo){
-        int nowStock = SYSTEM_YML.getInt("stock",SYSTEM_YML.getInt("def_stock",0)) + (toAdd ? STOCK_PER_SPIN : 0);
+        int nowStock = SYSTEM_YML.getInt("stock", DEFAULT_STOCK)+ (toAdd ? STOCK_PER_SPIN : 0);
         SYSTEM_YML.set("stock",nowStock);
         CustomConfig.saveYmlByID(ID);
 
         MAIN_SYSTEM.getSignSystem().update(SIGN,nowStock);
         if(isBingo){
             Bukkit.getScheduler().runTaskLater(plugin,()->{
-                MAIN_SYSTEM.getSignSystem().update(SIGN,0);
+                MAIN_SYSTEM.getSignSystem().update(SIGN,DEFAULT_STOCK);
             },SPIN_TIME[ITEM_FRAME_COUNT -1] * SPIN_TICK);
         }
 
