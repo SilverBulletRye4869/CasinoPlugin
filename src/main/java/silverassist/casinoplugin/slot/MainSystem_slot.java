@@ -47,6 +47,9 @@ public class MainSystem_slot {
 
     public void deleteSlot(String id){
         SLOTS.remove(id);
+        if(CustomConfig.getYmlByID(id).get("sign")!=null){
+            CustomConfig.getYmlByID(id).getLocation("sign").getBlock().setType(Material.AIR);
+        }
         CustomConfig.deleteYmlByID(id);
         Util.deleteDirectory(new File(CasinoPlugin.getInstance().getDataFolder()+"/data/"+id));
     }
@@ -61,7 +64,7 @@ public class MainSystem_slot {
             e.printStackTrace();
             return null;
         }
-        return stream.map(Path::toString).filter(g->g.matches(startRegex)).collect(Collectors.toList());
+        return stream.map(e->e.getFileName().toString()).filter(g->g.matches("^"+startRegex+".*")).collect(Collectors.toList());
     }
 
     public boolean reloadSlot(String id){
