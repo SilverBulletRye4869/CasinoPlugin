@@ -51,7 +51,7 @@ public class CategoryEdit {
 
         for(int i = 0;i<18;i++){
             if(YML.get(CATEGORY+".display."+i)==null)break;
-            inv.setItem(i,YML.getItemStack(CATEGORY+"."+i));
+            inv.setItem(i,YML.getItemStack(CATEGORY+".display."+i));
         }
         inv.setItem(18,Util.createItem(Material.GOLD_INGOT,"§6§l固定報酬を設定", List.of("§e§l現在: "+YML.getInt(CATEGORY+".constant_money",0),"§c0で無効化")));
         inv.setItem(19,Util.createItem(Material.EMERALD,"§a§l倍率を設定",List.of("§e§l現在: "+YML.getDouble(CATEGORY+".multiplier",1.0),"§c§l固定報酬有効時無効")));
