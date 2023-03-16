@@ -122,7 +122,7 @@ public class SlotCommand implements CommandExecutor {
                             if(args[2].equals("setconstantmoney") && args[5].matches("\\d+"))yml.set(args[4]+".constant_money",Integer.parseInt(args[5]));
                             else if(args[2].equals("setmultiplier") && args[5].matches("\\d+\\.?\\d*"))yml.set(args[4]+".multiplier",Double.parseDouble(args[5]));
                             else if(args[2].equals("setcategoryname"))yml.set(args[4]+".name",args[5]);
-                            else if(args[2].equals("setnextmode"))yml.set(args[4]+".nextmode",args[5]);
+                            else if(args[2].equals("setnextmode") && args[5].matches("\\d+"))yml.set(args[4]+".nextmode",Integer.parseInt(args[5])-1);
                             else if(args[2].equals("setweight") && args[5].matches("\\d+"))yml.set(args[4]+".weight",Integer.parseInt(args[5]));
                             CustomConfig.saveYmlByID(id,args[3]);
                             new CategoryEdit(plugin,MAIN_SYSTEM,p,id,Integer.parseInt(args[3]),args[4]).open();
@@ -164,10 +164,11 @@ public class SlotCommand implements CommandExecutor {
         public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
             switch (args.length){
                 case 1:
-                    return List.of("create","edit","delete","reload");
+                    return List.of("create","edit","delete","reloadslot");
                 case 2:
                     switch (args[0]){
                         case "edit":
+                        case "reloadslot":
                             return MAIN_SYSTEM.getSlotList(args[1]);
                     }
             }
