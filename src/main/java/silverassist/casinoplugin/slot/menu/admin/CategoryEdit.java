@@ -58,17 +58,14 @@ public class CategoryEdit {
         inv.setItem(20,boolItem.apply("当選時ブロードキャスト",YML.getBoolean(CATEGORY+".broadcast",false)));
         inv.setItem(21,boolItem.apply("当選時タイトル",YML.getBoolean(CATEGORY+".title",false)));
         inv.setItem(22,Util.createItem(Material.NAME_TAG,"§f§lカテゴリ名変更"));
-        inv.setItem(23,Util.createItem(Material.END_PORTAL_FRAME,"§a§lモード遷移先を変更",List.of("§f§l現在: "+(YML.getInt(CATEGORY+".nextmode")+1))));
+        inv.setItem(23,Util.createItem(Material.END_PORTAL_FRAME,"§a§l当選時のレベル遷移先を変更",List.of("§f§l現在: "+(YML.getInt(CATEGORY+".nextmode")+1))));
         inv.setItem(24,Util.createItem(Material.DROPPER,"§7§l比重を設定",List.of("§f§l現在: "+YML.getInt(CATEGORY+".weight",1))));
         inv.setItem(25,Util.createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"§b§l当選時アイテム⇒",List.of("§fこのカテゴリの目が出たときに","§f貰えるアイテム")));
         inv.setItem(26,YML.getItemStack(CATEGORY+".item"));
         for(int i = 27;i<44;i++)inv.setItem(i,Util.createItem(Material.GRAY_STAINED_GLASS_PANE,"§r"));
         inv.setItem(44,Util.createItem(Material.LAVA_BUCKET,"§c§lこのカテゴリを削除"));
 
-
         Util.delayInvOpen(P,inv);
-
-
     }
 
     private class listener implements Listener {
