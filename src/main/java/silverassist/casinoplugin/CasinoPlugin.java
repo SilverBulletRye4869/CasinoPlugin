@@ -33,9 +33,6 @@ public final class CasinoPlugin extends JavaPlugin {
 
         SLOT_MAIN_SYSTM = new MainSystem_slot(this);
         new SlotCommand(this,SLOT_MAIN_SYSTM);
-
-        new Test(this);
-
         // Plugin startup logic
 
     }
@@ -51,8 +48,8 @@ public final class CasinoPlugin extends JavaPlugin {
 
     private boolean folderSetup(){
         try{
-            Files.createDirectories(Paths.get(this.getDataFolder()+"/data"));
-            Files.createDirectories(Paths.get(this.getDataFolder()+"/log"));
+            Files.createDirectories(Paths.get(this.getDataFolder()+"/slot/data"));
+            Files.createDirectories(Paths.get(this.getDataFolder()+"/slot/log"));
         }catch (IOException e){
             Util.sendConsole("dataフォルダ又はlogフォルダの作成に失敗しました", Util.MessageType.ERROR);
             e.printStackTrace();
