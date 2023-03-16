@@ -61,7 +61,7 @@ public class CategoryChoice {
             if(!P.equals(e.getWhoClicked()) || e.getCurrentItem() == null || !e.getClickedInventory().getType().equals(InventoryType.CHEST))return;
             e.setCancelled(true);
             int slot = e.getSlot();
-            if(e.getCurrentItem().getType().equals(Material.WHITE_BANNER)){
+            if(e.getCurrentItem().getType().equals(Material.YELLOW_BANNER)){
                 YML.set(slot+".name",String.valueOf(slot+1));
                 YML.set(slot+".constant_moeny",0);
                 YML.set(slot+".multiplier",1.00);
@@ -70,7 +70,7 @@ public class CategoryChoice {
                 YML.set(slot+".weight",1);
                 YML.set(slot+".nextmode",LEVEL);
                 CustomConfig.saveYmlByID(ID, String.valueOf(LEVEL));
-                e.getInventory().setItem(slot,Util.createItem(Material.PAPER,"§e§lカテゴリー: "+(slot+1)));
+                e.getInventory().setItem(slot,Util.createItem(Material.PAPER,"§e§lカテゴリー: "+(slot+1),List.of("§f比重: 1")));
                 if(slot<16)e.getInventory().setItem(slot+1,Util.getPlusBanner());
 
             }else if(slot<17){
