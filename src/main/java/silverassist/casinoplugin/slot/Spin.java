@@ -115,7 +115,10 @@ public class Spin {
                 }
             }
 
-            if(category_f.equals("miss"))Util.sendPrefixMessage(p,"§c§lはずれました...");
+            if(category_f.equals("miss")){
+                Util.sendPrefixMessage(p,"§c§lはずれました...");
+                Log.write(ID,p,List.of(mode,"miss",String.valueOf(nowStock),"","","","",""));
+            }
             else{
                 int wonMoney = CONSTANT_MONEY_BY_CATEGORY.get(category_f);
                 if(wonMoney==0)wonMoney=(int)(nowStock * MULTIPLIER_BY_CATEGORY.get(category_f));
@@ -123,12 +126,28 @@ public class Spin {
                 Util.sendPrefixMessage(p,"§a§lおめでとうございます！！§d§l『"+bingoType+"』§a§l揃いです！");
                 Util.sendPrefixMessage(p,"§6"+wonMoney+"円§eを獲得しました。");
                 Vault.getEconomy().depositPlayer(p,wonMoney);
-                if(GAVE_ITEM_BY_CATEGORY.containsKey(category_f))p.getInventory().addItem(GAVE_ITEM_BY_CATEGORY.get(category_f));
+                ItemStack gotItem = null;
+                if(GAVE_ITEM_BY_CATEGORY.containsKey(category_f)){p.getInventory().addItem((gotItem = GAVE_ITEM_BY_CATEGORY.get(category_f)));}
                 if(BROADCAST.contains(category_f))Util.broadcast("§b§l"+p.getName()+"§a§lが§d§l『"+NAME+"』§a§lで、§6§l"+bingoType+"揃い§a§lにより§e§l"+wonMoney+"円§a§l獲得！！");
                 if(TITLE.contains(category_f))Util.title("§c§l"+NAME+"§6§lで当選！","§b§l"+p.getName()+"§a§lが§e§l"+wonMoney+"円§a§l獲得！！");
                 SYSTEM_YML.set("stock",DEFAULT_STOCK);
                 CustomConfig.saveYmlByID(ID);
+
+                Log.write(ID,p,
+                        List.of(
+                                mode,
+                                category_f,
+                                String.valueOf(nowStock),
+                                CONSTANT_MONEY_BY_CATEGORY.get(category_f).toString(),
+                                MULTIPLIER_BY_CATEGORY.get(category_f).toString(),
+                                String.valueOf(wonMoney),
+                                NEXT_MODE.get(category_f),
+                                gotItem == null ? " " : (gotItem.hasItemMeta() && gotItem.getItemMeta().hasDisplayName() ? gotItem.getItemMeta().getDisplayName() : gotItem.getType().name()),
+                                gotItem == null ? " " : "\""+gotItem.toString().replace("\"","\"\"")+"\""
+                        )
+                );
                 setMode(NEXT_MODE.get(category_f));
+                SYSTEM_YML.set("nowmode",NEXT_MODE.get(category_f));
             }
             isSpinning = false;
         });
@@ -148,7 +167,7 @@ public class Spin {
         AtomicInteger now = new AtomicInteger(0);
         yml.getKeys(false).stream().filter(g->!g.equals("miss")).forEach(e->{
             int weight = yml.getInt(e+".weight");
-            if(weight == 0)return;
+            if(weight == 0 || yml.get(e+".display") == null)return;
             Slot.PROBABILITY.put(now.addAndGet(weight),e);
             int size = yml.getConfigurationSection(e+".display").getKeys(false).size();
             ItemStack[] itemStacks = new ItemStack[size];
@@ -192,6 +211,5 @@ public class Spin {
     public boolean canSpin(Player p){
         return Vault.getEconomy().getBalance(p) >= PAYMENT;
     }
-
 
 }
