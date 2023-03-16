@@ -3,23 +3,22 @@ package silverassist.casinoplugin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.io.File;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class Util {
@@ -141,6 +140,7 @@ public class Util {
         }};
     }
 
+    public static boolean setItemFrame(String uuidStr, ItemStack item){return setItemFrame(UUID.fromString(uuidStr),item);}
     public static boolean setItemFrame(UUID uuid, ItemStack item){
         Entity entity = Bukkit.getEntity(uuid);
         if(entity==null || !(entity instanceof ItemFrame))return false;
@@ -149,6 +149,7 @@ public class Util {
         return true;
     }
 
+    public static ItemStack getItemFrame(String uuidStr){return getItemFrame(UUID.fromString(uuidStr));}
     public static ItemStack getItemFrame(UUID uuid){
         Entity entity = Bukkit.getEntity(uuid);
         if(entity==null || !(entity instanceof ItemFrame))return null;
@@ -157,10 +158,33 @@ public class Util {
     }
 
     public static Object getRandomIndex(Object[] array){
-        return array[(int)(Math.random())*array.length];
+        return array[(int)(Math.random()*array.length)];
     }
 
     public static Object getRandomIndex(List<Object> list){
         return list.get((int)(Math.random())*list.size());
+    }
+
+    public static ItemStack getPlusBanner(){
+        ItemStack item = new ItemStack(Material.YELLOW_BANNER);
+        BannerMeta bannerMeta = (BannerMeta) item.getItemMeta();
+        List<Pattern> patterns = new ArrayList<>();
+        //ちかいうちにつくる
+        patterns.add(new Pattern(DyeColor.LIGHT_BLUE, PatternType.STRAIGHT_CROSS));
+        patterns.add(new Pattern(DyeColor.YELLOW, PatternType.BORDER));
+        patterns.add(new Pattern(DyeColor.YELLOW, PatternType.STRIPE_TOP));
+        patterns.add(new Pattern(DyeColor.YELLOW, PatternType.STRIPE_BOTTOM));
+
+        bannerMeta.setPatterns(patterns);
+        item.setItemMeta(bannerMeta);
+        return  item;
+    }
+
+    public static void deleteDirectory(File targetFile){
+        if(targetFile.isFile())targetFile.delete();
+        else if(targetFile.isDirectory()){
+            Arrays.stream(targetFile.listFiles()).forEach(Util::deleteDirectory);
+            targetFile.delete();
+        }
     }
 }
