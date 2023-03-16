@@ -28,13 +28,13 @@ public class CustomConfig {
     public static boolean existYml(String id){return existYml(id,"system");}
     public static boolean existYml(String id, String type){
         if(existSet.contains(id+"_"+type))return true;
-        if(new File(plugin.getDataFolder(),"data/"+id+"/"+type+".yml").exists()){existSet.add(id+"_"+type);return true;}
+        if(new File(plugin.getDataFolder(),"slot/data/"+id+"/"+type+".yml").exists()){existSet.add(id+"_"+type);return true;}
         return false;
     }
 
     public static YamlConfiguration createYmlByID(String id){return createYmlByID(id,"system");}
     public static YamlConfiguration createYmlByID(String id,String type){
-        Path directoryPath = Paths.get(plugin.getDataFolder() + "/data/" + id);
+        Path directoryPath = Paths.get(plugin.getDataFolder() + "/slot/data/" + id);
         try {
             if(!Files.exists(directoryPath))Files.createDirectory(directoryPath);
         }catch (IOException e){
@@ -55,7 +55,7 @@ public class CustomConfig {
 
     public static boolean deleteYmlByID(String id){return deleteYmlByID(id,"all");}
     public static boolean deleteYmlByID(String id, String type){
-        File file = new File(plugin.getDataFolder(),type.equals("all") ? "data/"+id : "data/"+id+"/"+type+".yml");
+        File file = new File(plugin.getDataFolder(),type.equals("all") ? "slot/data/"+id : "slot/data/"+id+"/"+type+".yml");
         boolean result = file.delete();
         if(result){
             ymls.remove(id+"_"+type);
@@ -66,7 +66,7 @@ public class CustomConfig {
 
     public static boolean reloadYmlByID(String id){return reloadYmlByID(id,"system");}
     public static boolean reloadYmlByID(String id, String type){
-        File file = new File(plugin.getDataFolder(),"data/"+id+"/"+type+".yml");
+        File file = new File(plugin.getDataFolder(),"slot/data/"+id+"/"+type+".yml");
         if(!file.exists())return false;
         YamlConfiguration y = YamlConfiguration.loadConfiguration(file);
         ymls.put(id+"_"+type,y);
@@ -76,7 +76,7 @@ public class CustomConfig {
     public static void saveYmlByID(String id){saveYmlByID(id,"system");}
     public static void saveYmlByID(String id, String type){
         try{
-            ymls.get(id+"_"+type).save(new File(plugin.getDataFolder(),"data/" + id +"/"+type +".yml"));
+            ymls.get(id+"_"+type).save(new File(plugin.getDataFolder(),"slot/data/" + id +"/"+type +".yml"));
         }catch (IOException e){
             System.err.println("スロット『"+id+"-"+type+"+』の保存に失敗しました。:"+e);
         }

@@ -34,7 +34,7 @@ public class MainSystem_slot {
     }
 
     public boolean existSlot(String id){
-        return SLOTS.containsKey(id) || Files.exists(Paths.get(plugin.getDataFolder()+"/data/"+id));
+        return SLOTS.containsKey(id) || Files.exists(Paths.get(plugin.getDataFolder()+"/slot/data/"+id));
     }
 
     public Spin getSlot(String id){
@@ -51,14 +51,14 @@ public class MainSystem_slot {
             CustomConfig.getYmlByID(id).getLocation("sign").getBlock().setType(Material.AIR);
         }
         CustomConfig.deleteYmlByID(id);
-        Util.deleteDirectory(new File(CasinoPlugin.getInstance().getDataFolder()+"/data/"+id));
+        Util.deleteDirectory(new File(CasinoPlugin.getInstance().getDataFolder()+"/slot/data/"+id));
     }
 
     public List<String> getSlotList(){return getSlotList("");}
     public List<String> getSlotList(String startRegex){
         Stream<Path> stream;
         try {
-            stream = Files.list(Paths.get(plugin.getDataFolder().getPath()+"/data"));
+            stream = Files.list(Paths.get(plugin.getDataFolder().getPath()+"/slot/data"));
         } catch (IOException e) {
             System.err.println("dataフォルダの取得に失敗しました");
             e.printStackTrace();
