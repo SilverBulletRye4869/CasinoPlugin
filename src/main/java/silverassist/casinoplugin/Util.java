@@ -187,4 +187,14 @@ public class Util {
             targetFile.delete();
         }
     }
+
+    public static void addMoney(OfflinePlayer p, int amount){
+        Vault.getEconomy().depositPlayer(p,amount);
+        if(p.isOnline()) ((Player)p).sendMessage("§6"+amount+"円§e受け取りました");
+    }
+
+    public static void removeMoney(OfflinePlayer p, int amount){
+        Vault.getEconomy().withdrawPlayer(p,amount);
+        if(p.isOnline()) ((Player)p).sendMessage("§6"+amount+"円§e支払いました");
+    }
 }
