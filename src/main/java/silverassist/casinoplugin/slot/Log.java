@@ -63,7 +63,7 @@ public class Log {
 
     private static void playerLogErrorMessage(Player p, String date){
         p.sendMessage("§4§lこの文章が表示された場合は、以下の内容を運営までお伝えください。(スクリーンショット推奨)");
-        p.sendMessage("§c§l"+date+" -> TradeShopでエラーが発生");
+        p.sendMessage("§c§l"+date+" -> CasinoPluginでエラーが発生");
         p.sendMessage("§c§lコンソールを至急確認してください");
     }
 }
