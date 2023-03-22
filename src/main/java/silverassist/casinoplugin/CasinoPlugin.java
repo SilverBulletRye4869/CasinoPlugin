@@ -2,7 +2,6 @@ package silverassist.casinoplugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.casinoplugin.coingame.CoinCommand;
-import silverassist.casinoplugin.coingame.MainSystem_Coin;
 import silverassist.casinoplugin.slot.MainSystem_slot;
 import silverassist.casinoplugin.slot.SlotCommand;
 
@@ -18,7 +17,6 @@ public final class CasinoPlugin extends JavaPlugin {
     private static Logger log = null;
     private static Vault vault = null;
     private static MainSystem_slot SLOT_MAIN_SYSTM = null;
-    private static MainSystem_Coin COIN_MAIN_SYSTEM = null;
 
     @Override
     public void onEnable() {
@@ -36,8 +34,7 @@ public final class CasinoPlugin extends JavaPlugin {
 
         SLOT_MAIN_SYSTM = new MainSystem_slot(this);
         new SlotCommand(this,SLOT_MAIN_SYSTM);
-        COIN_MAIN_SYSTEM = new MainSystem_Coin(this);
-        new CoinCommand(this,COIN_MAIN_SYSTEM);
+        new CoinCommand(this);
         // Plugin startup logic
 
     }
