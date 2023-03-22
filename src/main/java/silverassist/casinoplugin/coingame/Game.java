@@ -9,8 +9,9 @@ import silverassist.casinoplugin.CasinoPlugin;
 import silverassist.casinoplugin.Util;
 import silverassist.casinoplugin.Vault;
 
-import java.awt.*;
+
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Game {
@@ -62,15 +63,19 @@ public class Game {
                 if(result.equals("表")){
                     faceBeters.forEach(p->{
                         Util.sendPrefixMessage(p,"§a§l勝ち！");
-                        Util.addMoney(p,totalMoney / faceBeters.size());
+                        int wonMoney = totalMoney / faceBeters.size();
+                        Util.addMoney(p,wonMoney);
+                        Log.write(p, List.of(bet,wonMoney,wonMoney-bet));
                     });
-                    backBeters.forEach(p->{Util.sendPrefixMessage(p,"§c§l負け...");});
+                    backBeters.forEach(p->{Util.sendPrefixMessage(p,"§c§l負け...");Log.write(p,List.of(bet,0,-bet));});
                 }else{
                     backBeters.forEach(p->{
                         Util.sendPrefixMessage(p,"§a§l勝ち！");
-                        Util.addMoney(p,totalMoney / backBeters.size());
+                        int wonMoney = totalMoney / backBeters.size();
+                        Util.addMoney(p,wonMoney);
+                        Log.write(p, List.of(bet,wonMoney,wonMoney-bet));
                     });
-                    faceBeters.forEach(p->{Util.sendPrefixMessage(p,"§c§l負け...");});
+                    faceBeters.forEach(p->{Util.sendPrefixMessage(p,"§c§l負け...");Log.write(p,List.of(bet,0,-bet));});
                 }
 
             } catch (InterruptedException e) {
@@ -79,6 +84,9 @@ public class Game {
                 faceBeters.forEach(p -> Util.addMoney(p,bet));
                 backBeters.forEach(p -> Util.addMoney(p,bet));
                 return;
+            } finally {
+                isCanbet = false;
+                Game.bet = 0;
             }
         });
 
@@ -89,6 +97,9 @@ public class Game {
         if(backBeters.contains(p))backBeters.remove(p);
         else Util.removeMoney(p,bet);;
         faceBeters.add(p);
+        Util.broadcast("§e§l"+p.getName()+"§a§lが§b§l表§a§lにベットしました");
+        Util.broadcast("§b§l表§c§l->§6§l"+faceBeters.size()+"§c§l人");
+        Util.broadcast("§b§l裏§c§l->§6§l"+backBeters.size()+"§c§l人");
 
     }
 
@@ -97,6 +108,9 @@ public class Game {
         if(faceBeters.contains(p))faceBeters.remove(p);
         else Util.removeMoney(p,bet);
         backBeters.add(p);
+        Util.broadcast("§e§l"+p.getName()+"§a§lが§d§l裏§a§lにベットしました");
+        Util.broadcast("§b§l表§c§l->§6§l"+faceBeters.size()+"§c§l人");
+        Util.broadcast("§b§l裏§c§l->§6§l"+backBeters.size()+"§c§l人");
     }
 
     private static void announce(int time){
@@ -111,4 +125,7 @@ public class Game {
         plugin.getServer().spigot().broadcast(msg);
     }
 
+    public static boolean canJoin(Player p){
+        return (Vault.getEconomy().getBalance(p) >= Game.bet || faceBeters.contains(p) || backBeters.contains(p));
+    }
 }
