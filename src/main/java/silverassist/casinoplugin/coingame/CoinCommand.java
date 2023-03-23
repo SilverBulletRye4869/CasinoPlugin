@@ -1,9 +1,6 @@
 package silverassist.casinoplugin.coingame;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.casinoplugin.Util;
@@ -17,7 +14,9 @@ public class CoinCommand implements CommandExecutor {
 
     public CoinCommand(JavaPlugin plugin){
         this.plugin = plugin;
-        plugin.getCommand("coingame").setExecutor(this);
+        PluginCommand command = plugin.getCommand("coingame");
+        command.setExecutor(this);
+        command.setTabCompleter(new Tab());
     }
 
 
@@ -41,13 +40,14 @@ public class CoinCommand implements CommandExecutor {
                         Util.sendPrefixMessage(p,"§c§l所持金が足りません");
                         return true;
                     }
-                    Game.start(Integer.parseInt(args[1]),p);
+                    if(!Game.start(Integer.parseInt(args[1]),p))return true;
                     if(args.length>2 && (args[2].equals("back") || args[2].equals("b"))){Game.betToBack(p);}
                     else Game.betToFace(p);
                 }
                 return true;
 
             case "join":
+            case "bet":
                 if(!Game.canJoin(p)){
                     Util.sendPrefixMessage(p,"§c§l所持金が足りません");
                     return true;
