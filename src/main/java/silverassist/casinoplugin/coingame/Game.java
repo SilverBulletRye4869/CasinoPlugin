@@ -22,16 +22,23 @@ public class Game {
     private static Set<Player> backBeters = new HashSet<>();
     private static boolean isCanbet = false;
 
-    public static void start(int bet, Player owner){
-        if(bet>0){
+    public static boolean start(int bet, Player owner){
+        if(Game.bet>0){
             Util.sendPrefixMessage(owner,"§c現在、別のコインゲームが開催中です");
-            return;
+            return false;
         }
         isCanbet = true;
         Game.bet = bet;
 
-        Util.broadcast("&6&k&laaa §6&lコインゲームが始められました！ &6&k&laaa");
-        announce(30);
+        Util.broadcast("§6§k§laaa §6§lコインゲームが始められました！ §6§k§laaa");
+        Util.broadcast("§e掛け金: §6§l"+bet+"円§f, §d残り30秒");
+        TextComponent msg;
+        msg= new TextComponent("§b§l[表にベット！]");
+        msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/coingame bet face"));
+        plugin.getServer().spigot().broadcast(msg);
+        msg = new TextComponent("§c§l[裏にベット！]");
+        msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/coingame bet back"));
+        plugin.getServer().spigot().broadcast(msg);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, ()->{
             try {
                 Thread.sleep(10000);
@@ -89,7 +96,7 @@ public class Game {
                 Game.bet = 0;
             }
         });
-
+        return true;
     }
 
     public static void betToFace(Player p){
@@ -104,7 +111,7 @@ public class Game {
     }
 
     public static void betToBack(Player p){
-        if(backBeters.contains(p) || isCanbet)return;
+        if(backBeters.contains(p) || !isCanbet)return;
         if(faceBeters.contains(p))faceBeters.remove(p);
         else Util.removeMoney(p,bet);
         backBeters.add(p);
@@ -113,16 +120,8 @@ public class Game {
         Util.broadcast("§b§l裏§c§l->§6§l"+backBeters.size()+"§c§l人");
     }
 
-    private static void announce(int time){
-        Util.broadcast("現在、コインゲームの賭け受付中です。");
-        Util.broadcast("§e掛け金: §6"+bet+"円§f, §d残り"+time+"秒");
-        TextComponent msg;
-        msg= new TextComponent("§b§l[表にベット！]");
-        msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/coingame bet face"));
-        plugin.getServer().spigot().broadcast(msg);
-        msg = new TextComponent("§c§l[裏にベット！]");
-        msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/coingame bet back"));
-        plugin.getServer().spigot().broadcast(msg);
+    private static void announce(int time) {
+        Util.broadcast("現在、コインゲームの賭け受付中です。§e掛け金: §6" + bet + "円§f, §d残り" + time + "秒");
     }
 
     public static boolean canJoin(Player p){
